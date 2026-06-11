@@ -182,3 +182,33 @@ def abrirObservarEspacio(pVentana,pEstacionamiento):
     resultado.pack(pady=15)
     Button(ventana,text="Buscar espacio",font=("Century Gothic",12,"bold"),width=30,command=lambda:observarEspacioTk(pEstacionamiento,ubicacion,resultado)).pack(pady=5)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=30,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
+
+#Funcion principal de la opcion 2 del menu
+def observarEspacioTk(pEstacionamiento,pUbicacion,pResultado):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la lista del estacionamiento, la ubicacion y el label de resultado
+    -Salida:
+        Se muestra la informacion del espacio consultado
+    '''
+    validar=validarObservarEspacioAux(pUbicacion.get())
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
+
+    ubicacion=pUbicacion.get().strip()
+    vehiculo=buscarVehiculoUbicacionAux(pEstacionamiento,ubicacion)
+
+    if vehiculo==False:
+        pResultado.config(text="Ubicación: "+ubicacion+"\nEstado: Libre")
+    else:
+        texto=""
+        texto+="Ubicación: "+vehiculo.ubicacion+"\n"
+        texto+="Estado: Ocupado\n"
+        texto+="Placa: "+vehiculo.placa+"\n"
+        texto+="Marca: "+vehiculo.marca+"\n"
+        texto+="Color: "+vehiculo.color+"\n"
+        texto+="Tipo: "+vehiculo.tipo+"\n"
+        texto+="Entrada: "+vehiculo.fechaEntrada
+        pResultado.config(text=texto)
