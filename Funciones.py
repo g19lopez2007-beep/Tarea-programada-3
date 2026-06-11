@@ -212,3 +212,40 @@ def observarEspacioTk(pEstacionamiento,pUbicacion,pResultado):
         texto+="Tipo: "+vehiculo.tipo+"\n"
         texto+="Entrada: "+vehiculo.fechaEntrada
         pResultado.config(text=texto)
+
+#Funcion principal de la opcion 2 del menu
+def abrirEstacionarVehiculo(pVentana,pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal y la lista del estacionamiento
+    -Salida:
+        Se muestra la ventana para estacionar un vehiculo manualmente
+    '''
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Estacionar vehículo")
+    ventana.geometry("600x450")
+    Label(ventana,text="ESTACIONAR VEHÍCULO",font=("Century Gothic",14,"bold")).pack(pady=15)
+    frame=Frame(ventana)
+    frame.pack()
+    Label(frame,text="Placa:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
+    placa=Entry(frame,font=("Century Gothic",12))
+    placa.grid(row=0,column=1,pady=5)
+    Label(frame,text="Marca:",font=("Century Gothic",12)).grid(row=1,column=0,pady=5,sticky="w")
+    marca=Entry(frame,font=("Century Gothic",12))
+    marca.grid(row=1,column=1,pady=5)
+    Label(frame,text="Color:",font=("Century Gothic",12)).grid(row=2,column=0,pady=5,sticky="w")
+    color=Entry(frame,font=("Century Gothic",12))
+    color.grid(row=2,column=1,pady=5)
+    Label(frame,text="Tipo:",font=("Century Gothic",12)).grid(row=3,column=0,pady=5,sticky="w")
+    tipo=Entry(frame,font=("Century Gothic",12))
+    tipo.grid(row=3,column=1,pady=5)
+    Label(frame,text="Ubicación:",font=("Century Gothic",12)).grid(row=4,column=0,pady=5,sticky="w")
+    ubicacion=Entry(frame,font=("Century Gothic",12))
+    ubicacion.grid(row=4,column=1,pady=5)
+    Label(frame,text="Monto por hora:",font=("Century Gothic",12)).grid(row=5,column=0,pady=5,sticky="w")
+    monto=Entry(frame,font=("Century Gothic",12))
+    monto.grid(row=5,column=1,pady=5)
+    Button(ventana,text="Estacionar vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:estacionarVehiculoTk(pVentana,ventana,pEstacionamiento,placa,marca,color,tipo,ubicacion,monto)).pack(pady=10)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
