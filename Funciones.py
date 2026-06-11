@@ -158,3 +158,27 @@ def crearObjetosVehiculos(pDiccionario):
         datos=pDiccionario[placa]
         lista.append(Vehiculo(placa,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5],datos[6],datos[7]))
     return lista
+
+#Funcion principal de la opcion 2 del menu
+def abrirObservarEspacio(pVentana,pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal y la lista del estacionamiento
+    -Salida:
+        Se muestra la ventana para observar un espacio
+    '''
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Observar espacio")
+    ventana.geometry("500x350")
+    Label(ventana,text="OBSERVAR ESPACIO",font=("Century Gothic",14,"bold")).pack(pady=15)
+    frame=Frame(ventana)
+    frame.pack()
+    Label(frame,text="Ubicación:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
+    ubicacion=Entry(frame,font=("Century Gothic",12))
+    ubicacion.grid(row=0,column=1,pady=5)
+    resultado=Label(ventana,text="",font=("Century Gothic",11),justify="left")
+    resultado.pack(pady=15)
+    Button(ventana,text="Buscar espacio",font=("Century Gothic",12,"bold"),width=30,command=lambda:observarEspacioTk(pEstacionamiento,ubicacion,resultado)).pack(pady=5)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=30,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
