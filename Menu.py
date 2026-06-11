@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Fecha de creacion 10/6/2026
+#Fecha de creacion 11/6/2026
 
 from tkinter import *
 from Funciones import *
@@ -10,7 +10,7 @@ def abrirSubmenuVerEstacionamiento(pVentana,pEstacionamiento):
     '''
     Funcionamiento:
     -Entrada:
-        Se recibe la ventana principal y el objeto estacionamiento
+        Se recibe la ventana principal y la lista del estacionamiento
     -Salida:
         Se muestra el submenú de ver estacionamiento
     '''
@@ -27,7 +27,7 @@ def abrirSubmenuReportes(pVentana,pEstacionamiento):
     '''
     Funcionamiento:
     -Entrada:
-        Se recibe la ventana principal y el objeto estacionamiento
+        Se recibe la ventana principal y la lista del estacionamiento
     -Salida:
         Se muestra el submenú de reportes
     '''
@@ -45,7 +45,7 @@ def abrirSubmenuConfiguracion(pVentana,pEstacionamiento):
     '''
     Funcionamiento:
     -Entrada:
-        Se recibe la ventana principal y el objeto estacionamiento
+        Se recibe la ventana principal y la lista del estacionamiento
     -Salida:
         Se muestra el submenú de configuración
     '''
@@ -63,7 +63,7 @@ def menuPrincipal(pEstacionamiento):
     '''
     Funcionamiento:
     -Entrada:
-        Se recibe el objeto estacionamiento
+        Se recibe la lista del estacionamiento
     -Salida:
         Se muestra el menú principal usando tkinter
     '''
@@ -71,12 +71,12 @@ def menuPrincipal(pEstacionamiento):
     ventana.title("Sistema de Parqueo")
     ventana.geometry("500x450")
     Label(ventana,text="SISTEMA DE PARQUEO",font=("Century Gothic",14,"bold")).pack(pady=15)
-    Button(ventana,text="1.Obtener vehículos",font=("Century Gothic",12,"bold"),width=35,command=lambda:ejecutarFuncionPendiente("obtenerVehiculos")).pack(pady=5)
+    Button(ventana,text="1.Obtener vehículos",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirObtenerVehiculos(ventana,pEstacionamiento)).pack(pady=5)
     Button(ventana,text="2.Ver estacionamiento",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirSubmenuVerEstacionamiento(ventana,pEstacionamiento)).pack(pady=5)
     Button(ventana,text="3.Reportes",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirSubmenuReportes(ventana,pEstacionamiento)).pack(pady=5)
     Button(ventana,text="4.Configuración",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirSubmenuConfiguracion(ventana,pEstacionamiento)).pack(pady=5)
     Button(ventana,text="5.Acerca de",font=("Century Gothic",12,"bold"),width=35,command=lambda:ejecutarFuncionPendiente("acercaDe")).pack(pady=5)
     Button(ventana,text="6.Salir",font=("Century Gothic",12,"bold"),width=35,command=ventana.destroy).pack(pady=5)
     ventana.mainloop()
-estacionamiento={}
+estacionamiento=cargarEstacionamiento()
 menuPrincipal(estacionamiento)
