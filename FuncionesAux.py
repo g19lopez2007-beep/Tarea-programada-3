@@ -252,3 +252,24 @@ def buscarVehiculoUbicacionAux(pEstacionamiento,pUbicacion):
         if vehiculo.ubicacion==pUbicacion:
             return vehiculo
     return False
+
+#Funcion Aux de la opcion 2 del menu
+def validarDatosEstacionarAux(pPlaca,pMarca,pColor,pTipo,pUbicacion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se reciben los datos del vehiculo
+    -Salida:
+        Se devuelve True si los datos son validos o un mensaje de error
+    '''
+    if pPlaca.strip()=="":
+        return "Debe ingresar la placa del vehículo."
+    if pMarca.strip()=="":
+        return "Debe ingresar la marca del vehículo."
+    if pColor.strip()=="":
+        return "Debe ingresar el color del vehículo."
+    if pTipo.strip()=="":
+        return "Debe ingresar el tipo del vehículo."
+    if pUbicacion.strip()=="":
+        return "Debe ingresar la ubicación del vehículo.\nEjemplo: G1"
+    return True
