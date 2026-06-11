@@ -238,3 +238,17 @@ def obtenerFechaArchivoAux():
         Se devuelve la fecha y hora actual para usar en nombres de archivo
     '''
     return time.strftime("%d-%m-%Y_%H-%M")
+
+#Funcion Aux de la opcion 2 del menu
+def buscarVehiculoUbicacionAux(pEstacionamiento,pUbicacion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la lista del estacionamiento y la ubicacion a buscar
+    -Salida:
+        Se devuelve el vehiculo encontrado o False si no existe
+    '''
+    for vehiculo in pEstacionamiento:
+        if vehiculo.ubicacion==pUbicacion:
+            return vehiculo
+    return False
