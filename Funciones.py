@@ -196,10 +196,8 @@ def observarEspacioTk(pEstacionamiento,pUbicacion,pResultado):
     if validar!=True:
         messagebox.showinfo("Sistema de Parqueo",validar)
         return
-
     ubicacion=pUbicacion.get().strip()
     vehiculo=buscarVehiculoUbicacionAux(pEstacionamiento,ubicacion)
-
     if vehiculo==False:
         pResultado.config(text="Ubicación: "+ubicacion+"\nEstado: Libre")
     else:

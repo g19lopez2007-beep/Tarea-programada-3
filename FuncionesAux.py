@@ -287,3 +287,17 @@ def buscarVehiculoPlacaAux(pEstacionamiento,pPlaca):
         if vehiculo.placa==pPlaca:
             return True
     return False
+
+#Funcion Aux de la opcion 2 del menu
+
+def validarObservarEspacioAux(pUbicacion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ubicacion digitada
+    -Salida:
+        Se devuelve True si es valida o un mensaje de error
+    '''
+    if pUbicacion.strip()=="":
+        return "Debe ingresar una ubicación.\nFormato correcto: G1, G2, G3"
+    return True
