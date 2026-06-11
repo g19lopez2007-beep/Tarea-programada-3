@@ -19,8 +19,8 @@ def abrirSubmenuVerEstacionamiento(pVentana,pEstacionamiento):
     ventana.title("Ver estacionamiento")
     ventana.geometry("500x350")
     Label(ventana,text="VER ESTACIONAMIENTO",font=("Century Gothic",14,"bold")).pack(pady=15)
-    Button(ventana,text="1.Observar espacio",font=("Century Gothic",12,"bold"),width=35,command=lambda:ejecutarFuncionPendiente("observarEspacio")).pack(pady=5)
-    Button(ventana,text="2.Estacionar un vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:ejecutarFuncionPendiente("estacionarVehiculo")).pack(pady=5)
+    Button(ventana,text="1.Observar espacio",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirObservarEspacio(ventana,pEstacionamiento)).pack(pady=5)
+    Button(ventana,text="2.Estacionar un vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirEstacionarVehiculo(ventana,pEstacionamiento)).pack(pady=5)
     Button(ventana,text="3.Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
 
 def abrirSubmenuReportes(pVentana,pEstacionamiento):
