@@ -249,3 +249,47 @@ def abrirEstacionarVehiculo(pVentana,pEstacionamiento):
     monto.grid(row=5,column=1,pady=5)
     Button(ventana,text="Estacionar vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:estacionarVehiculoTk(pVentana,ventana,pEstacionamiento,placa,marca,color,tipo,ubicacion,monto)).pack(pady=10)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
+
+#Funcion principal de la opcion 2 del menu
+def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMarca,pColor,pTipo,pUbicacion,pMonto):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se reciben los datos del vehiculo digitados en la ventana
+    -Salida:
+        Se guarda el vehiculo en el estacionamiento
+    '''
+    validar=validarDatosEstacionarAux(pPlaca.get(),pMarca.get(),pColor.get(),pTipo.get(),pUbicacion.get())
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
+    try:
+        monto=round(float(pMonto.get()),2)
+    except:
+        messagebox.showinfo("Sistema de Parqueo","El monto por hora debe ser numérico.\nEjemplo: 1000 o 1000.50")
+        return
+    if monto<=0:
+        messagebox.showinfo("Sistema de Parqueo","El monto por hora debe ser mayor a 0.")
+        return
+    placa=pPlaca.get().strip().upper()
+    marca=pMarca.get().strip()
+    color=pColor.get().strip()
+    tipo=pTipo.get().strip()
+    ubicacion=pUbicacion.get().strip().upper()
+    existePlaca=buscarVehiculoPlacaAux(pEstacionamiento,placa)
+    if existePlaca==True:
+        messagebox.showinfo("Sistema de Parqueo","Ya existe un vehículo con esa placa.")
+        return
+    existeUbicacion=buscarVehiculoUbicacionAux(pEstacionamiento,ubicacion)
+    if existeUbicacion!=False:
+        messagebox.showinfo("Sistema de Parqueo","La ubicación ya está ocupada.")
+        return
+    fechaEntrada=generarFechaHoraEntradaAux()
+    fechaSalida=""
+    tipoPago=0
+    vehiculo=Vehiculo(placa,marca,color,tipo,ubicacion,fechaEntrada,fechaSalida,monto,tipoPago)
+    pEstacionamiento.append(vehiculo)
+    guardarEstacionamiento(pEstacionamiento)
+    crearVouchersVehiculosAux([vehiculo])
+    messagebox.showinfo("Sistema de Parqueo","Vehículo estacionado correctamente.")
+    regresarMenuPrincipal(pVentanaPrincipal,pVentana)
