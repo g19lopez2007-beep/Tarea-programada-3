@@ -273,3 +273,17 @@ def validarDatosEstacionarAux(pPlaca,pMarca,pColor,pTipo,pUbicacion):
     if pUbicacion.strip()=="":
         return "Debe ingresar la ubicación del vehículo.\nEjemplo: G1"
     return True
+
+#Funcion Aux de la opcion 2 del menu
+def buscarVehiculoPlacaAux(pEstacionamiento,pPlaca):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la lista del estacionamiento y la placa a buscar
+    -Salida:
+        Se devuelve True si la placa ya existe o False si no existe
+    '''
+    for vehiculo in pEstacionamiento:
+        if vehiculo.placa==pPlaca:
+            return True
+    return False
