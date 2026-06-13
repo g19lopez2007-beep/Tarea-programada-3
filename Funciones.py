@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Fecha de creacion 11/6/2026
+#Ultima fecha de modificacion: 12/6/2026
 
 from FuncionesAux import *
 import pickle
@@ -36,17 +36,6 @@ class Vehiculo:
         self.fechaSalida=pFechaSalida
         self.montoHora=pMontoHora
         self.tipoPago=pTipoPago
-
-#Funcion principal temporal para las opciones del sistema
-def ejecutarFuncionPendiente(pNombreFuncion):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe el nombre de la función pendiente
-    -Salida:
-        Se muestra un mensaje indicando dónde debe ir esa función
-    '''
-    mostrarPendienteAux(pNombreFuncion)
 
 #Funcion principal de carga inicial del menu
 def cargarEstacionamiento():
@@ -90,12 +79,16 @@ def abrirObtenerVehiculos(pVentana,pEstacionamiento):
     pVentana.withdraw()
     ventanaObtener=Toplevel()
     ventanaObtener.title("Obtener vehículos")
-    ventanaObtener.geometry("600x450")
+    ventanaObtener.geometry("650x500")
     Label(ventanaObtener,text="OBTENER VEHÍCULOS",font=("Century Gothic",14,"bold")).pack(pady=15)
     frame=Frame(ventanaObtener)
     frame.pack()
+    configuracion=cargarConfiguracionAux()
     Label(frame,text="Tamaño del estacionamiento:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
     tamanno=Entry(frame,font=("Century Gothic",12))
+    if configuracion!=False and configuracion[0]>0:
+        tamanno.config(state="disabled")
+        Label(frame,text="Máximo configurado: "+str(configuracion[0]),font=("Century Gothic",10)).grid(row=0,column=2,padx=10,pady=5,sticky="w")
     tamanno.grid(row=0,column=1,pady=5)
     Label(frame,text="Espacio para carro eléctrico:",font=("Century Gothic",12)).grid(row=1,column=0,pady=5,sticky="w")
     electrico=StringVar()
@@ -119,20 +112,35 @@ def obtenerVehiculosTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno,pEle
     -Salida:
         Se obtienen vehículos, se guardan como objetos, se generan los vouchers y se vuelve al menú
     '''
-    validar=validarDatosObtenerVehiculosAux(pTamanno.get(),pMonto.get(),pApi.get())
+    configuracion=cargarConfiguracionAux()
+    if configuracion!=False and configuracion[0]>0:
+        tamanno=configuracion[0]
+    else:
+        validarTamanno=validarTamannoEstacionamientoAux(pTamanno.get())
+        if validarTamanno!=True:
+            messagebox.showinfo("Sistema de Parqueo",validarTamanno)
+            return
+        tamanno=int(pTamanno.get())
+        guardarConfiguracionAux(tamanno)
+    validar=validarDatosObtenerVehiculosAux(str(tamanno),pMonto.get(),pApi.get())
     if validar!=True:
         messagebox.showinfo("Sistema de Parqueo",validar)
         return
-    tamanno=int(pTamanno.get())
     monto=round(float(pMonto.get()),2)
     if pElectrico.get()=="Sí":
         electrico=1
     else:
         electrico=0
     cantidad=calcularTopeMasivoAux(tamanno,electrico)
+    if cantidad<=0:
+        messagebox.showinfo("Sistema de Parqueo","No hay espacios disponibles para realizar la carga masiva.")
+        return
     datos=obtenerJsonApiAux(pApi.get(),cantidad)
     if type(datos)==str:
         messagebox.showinfo("Sistema de Parqueo",datos)
+        return
+    if len(datos)>cantidad:
+        messagebox.showinfo("Sistema de Parqueo","El tamaño del estacionamiento es menor que la cantidad de vehículos solicitados.\nMáximo permitido: "+str(cantidad))
         return
     diccionario=crearDiccionarioVehiculosAux(datos,cantidad,monto)
     objetos=crearObjetosVehiculos(diccionario)
@@ -141,7 +149,7 @@ def obtenerVehiculosTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno,pEle
         pEstacionamiento.append(objeto)
     guardarEstacionamiento(pEstacionamiento)
     crearVouchersVehiculosAux(pEstacionamiento)
-    messagebox.showinfo("Sistema de Parqueo","Se cargaron "+str(len(pEstacionamiento))+" vehículos correctamente.")
+    messagebox.showinfo("Sistema de Parqueo","Se cargaron "+str(len(pEstacionamiento))+" vehículos correctamente.\nMáximo permitido por el estacionamiento: "+str(cantidad))
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
 #Funcion principal de la opcion 1 del menu
@@ -291,3 +299,69 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
     crearVouchersVehiculosAux([vehiculo])
     messagebox.showinfo("Sistema de Parqueo","Vehículo estacionado correctamente.")
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
+
+#Funcion principal de la opcion 4a del menu
+def abrirTamannoEstacionamiento(pVentana,pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal y la lista del estacionamiento
+    -Salida:
+        Se muestra la ventana para configurar el tamaño del estacionamiento
+    '''
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Tamaño del estacionamiento")
+    ventana.geometry("500x300")
+    Label(ventana,text="TAMAÑO DEL ESTACIONAMIENTO",font=("Century Gothic",14,"bold")).pack(pady=15)
+    frame=Frame(ventana)
+    frame.pack()
+    Label(frame,text="Nuevo tamaño:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
+    tamanno=Entry(frame,font=("Century Gothic",12))
+    tamanno.grid(row=0,column=1,pady=5)
+    Button(ventana,text="Guardar",font=("Century Gothic",12,"bold"),width=35,command=lambda:guardarTamannoEstacionamientoTk(pVentana,ventana,pEstacionamiento,tamanno)).pack(pady=10)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
+
+#Funcion principal de la opcion 4a del menu
+def guardarTamannoEstacionamientoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se reciben la ventana principal, la ventana actual, el estacionamiento y el campo de tamaño
+    -Salida:
+        Se guarda el nuevo tamaño del estacionamiento en configuración
+    '''
+    validar=validarTamannoEstacionamientoAux(pTamanno.get())
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
+    tamanno=int(pTamanno.get())
+    configuracion=cargarConfiguracionAux()
+    if configuracion!=False and configuracion[0]>0:
+        confirmar=messagebox.askyesno("Sistema de Parqueo","Ya existe un tamaño de estacionamiento guardado.\nSi continúa, puede perder datos.\n¿Está seguro que desea continuar?")
+        if confirmar==False:
+            return
+    if tamanno<len(pEstacionamiento):
+        messagebox.showinfo("Sistema de Parqueo","El tamaño del estacionamiento no puede ser menor que la cantidad de vehículos cargados.")
+        return
+    guardarConfiguracionAux(tamanno)
+    messagebox.showinfo("Sistema de Parqueo","Tamaño del estacionamiento guardado correctamente.")
+    regresarMenuPrincipal(pVentanaPrincipal,pVentana)
+
+#Funcion principal de la opcion 5 del menu
+def abrirAcercaDe(pVentana):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal
+    -Salida:
+        Se muestra la ventana acerca de con la información de los creadores
+    '''
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Acerca de")
+    ventana.geometry("600x450")
+    Label(ventana,text="ACERCA DE",font=("Century Gothic",14,"bold")).pack(pady=15)
+    texto="\nCreadores:\nGustavo López Alvarado\nMel Acuña\n\nCurso:\nTaller de Programación\n\nInstitución:\nInstituto Tecnológico de Costa Rica."
+    Label(ventana,text=texto,font=("Century Gothic",12),justify="center").pack(pady=20)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)

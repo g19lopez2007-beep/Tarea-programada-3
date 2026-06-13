@@ -1,9 +1,9 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Fecha de modificacion 11/6/2026
-
+#Ultima fecha de modificacion: 12/6/2026
 from tkinter import messagebox
+import pickle
 import time
 import random
 import json
@@ -138,7 +138,7 @@ def crearDiccionarioVehiculosAux(pDatos,pCantidad,pMonto):
             break
         placa=obtenerDatoJsonAux(dato,("placa","license_plate","plate","car_plate","id","vin"))
         marca=obtenerDatoJsonAux(dato,("marca","make","brand","car_make","modelo","model","make_and_model","car"))
-        color=obtenerDatoJsonAux(dato,("color","car_color","car_color"))
+        color=obtenerDatoJsonAux(dato,("color","car_color"))
         tipo=obtenerDatoJsonAux(dato,("tipo","car_type","vehicle_type","type","car_model"))
         if placa=="Sin dato":
             placa="TMP"+str(contador+1).zfill(4)
@@ -289,7 +289,6 @@ def buscarVehiculoPlacaAux(pEstacionamiento,pPlaca):
     return False
 
 #Funcion Aux de la opcion 2 del menu
-
 def validarObservarEspacioAux(pUbicacion):
     '''
     Funcionamiento:
@@ -301,3 +300,56 @@ def validarObservarEspacioAux(pUbicacion):
     if pUbicacion.strip()=="":
         return "Debe ingresar una ubicación.\nFormato correcto: G1, G2, G3"
     return True
+
+#Funcion Aux de la opcion 4a del menu
+def validarTamannoEstacionamientoAux(pTamanno):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el texto del campo de tamaño
+    -Salida:
+        Se devuelve True si el dato es válido o un mensaje indicando el formato correcto
+    '''
+    if pTamanno.strip()=="":
+        return "Debe ingresar el tamaño del estacionamiento.\nFormato correcto: número entero positivo, por ejemplo: 20"
+    try:
+        tamanno=int(pTamanno)
+    except:
+        return "El tamaño del estacionamiento debe escribirse con números enteros.\nFormato correcto: 20"
+    if tamanno<3:
+        return "El tamaño del estacionamiento no es válido.\nFormato correcto: debe ser un número mayor o igual a 3"
+    return True
+
+#Funcion Aux de la opcion 4a del menu
+def guardarConfiguracionAux(pTamanno):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el tamaño del estacionamiento a guardar
+    -Salida:
+        Se guarda la configuración en memoria secundaria
+    '''
+    configuracion=cargarConfiguracionAux()
+    if configuracion==False:
+        configuracion=[0,0,0.0]
+    configuracion[0]=pTamanno
+    archivo=open("configuracion.dat","wb")
+    pickle.dump(configuracion,archivo)
+    archivo.close()
+
+#Funcion Aux de la opcion 4a del menu
+def cargarConfiguracionAux():
+    '''
+    Funcionamiento:
+    -Entrada:
+        No recibe datos
+    -Salida:
+        Se devuelve la lista de configuración [tamanno,tiempoGracia,montoHora] o False si no existe
+    '''
+    try:
+        archivo=open("configuracion.dat","rb")
+        configuracion=pickle.load(archivo)
+        archivo.close()
+        return configuracion
+    except:
+        return False
