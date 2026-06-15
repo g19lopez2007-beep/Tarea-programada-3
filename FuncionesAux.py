@@ -353,3 +353,39 @@ def cargarConfiguracionAux():
         return configuracion
     except:
         return False
+
+#Funcion Aux de la opcion 4b del menu
+def validarTiempoGraciaAux(pTiempo):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el tiempo de gracia escrito por el usuario
+    -Salida:
+        Se devuelve True si el dato es valido o un mensaje de error
+    '''
+    if pTiempo.strip()=="":
+        return "Debe ingresar el tiempo de gracia.\nFormato correcto: número entero positivo, por ejemplo: 15"
+    try:
+        tiempo=int(pTiempo)
+    except:
+        return "El tiempo de gracia debe escribirse con números enteros.\nFormato correcto: 15"
+    if tiempo<0:
+        return "El tiempo de gracia no puede ser negativo.\nFormato correcto: 0, 5, 10, 15"
+    return True
+
+#Funcion Aux de la opcion 4b del menu
+def guardarTiempoGraciaAux(pTiempo):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el tiempo de gracia en minutos
+    -Salida:
+        Se guarda el tiempo de gracia en la configuracion del sistema
+    '''
+    configuracion=cargarConfiguracionAux()
+    if configuracion==False:
+        configuracion=[0,0,0.0]
+    configuracion[1]=pTiempo
+    archivo=open("configuracion.dat","wb")
+    pickle.dump(configuracion,archivo)
+    archivo.close()
