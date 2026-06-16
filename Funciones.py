@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 15/6/2026
+#Ultima fecha de modificacion: 16/6/2026
 
 from FuncionesAux import *
 import pickle
@@ -411,3 +411,45 @@ def abrirAcercaDe(pVentana):
     texto="\nCreadores:\nGustavo López Alvarado\nMel Acuña\n\nCurso:\nTaller de Programación\n\nInstitución:\nInstituto Tecnológico de Costa Rica."
     Label(ventana,text=texto,font=("Century Gothic",12),justify="center").pack(pady=20)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
+
+#Funcion principal de la opcion 4c del menu
+def abrirModificarMontoHora(pVentana):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal
+    -Salida:
+        Se muestra la ventana para modificar el monto por hora
+    '''
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Modificar monto por hora")
+    ventana.geometry("500x300")
+    Label(ventana,text="MODIFICAR MONTO POR HORA",font=("Century Gothic",14,"bold")).pack(pady=15)
+    frame=Frame(ventana)
+    frame.pack()
+    Label(frame,text="Nuevo monto:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
+    monto=Entry(frame,font=("Century Gothic",12))
+    monto.grid(row=0,column=1,pady=5)
+    Button(ventana,text="Guardar",font=("Century Gothic",12,"bold"),width=35,command=lambda:guardarMontoHoraTk(pVentana,ventana,monto)).pack(pady=10)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
+
+#Funcion principal de la opcion 4c del menu
+def guardarMontoHoraTk(pVentanaPrincipal,pVentana,pMonto):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal, la ventana actual y el monto por hora
+    -Salida:
+        Se valida y guarda el monto por hora en configuración
+    '''
+    validar=validarMontoHoraAux(pMonto.get())
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
+    resultado=guardarMontoHoraAux(pMonto.get())
+    if resultado!=True:
+        messagebox.showinfo("Sistema de Parqueo",resultado)
+        return
+    messagebox.showinfo("Sistema de Parqueo","Monto por hora guardado correctamente.")
+    regresarMenuPrincipal(pVentanaPrincipal,pVentana)

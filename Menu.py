@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 15/6/2026
+#Ultima fecha de modificacion: 16/6/2026
 
 from tkinter import *
 from Funciones import *
@@ -56,7 +56,7 @@ def abrirSubmenuConfiguracion(pVentana,pEstacionamiento):
     Label(ventana,text="CONFIGURACIÓN",font=("Century Gothic",14,"bold")).pack(pady=15)
     Button(ventana,text="1.Tamaño del estacionamiento",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirTamannoEstacionamiento(ventana,pEstacionamiento)).pack(pady=5)
     Button(ventana,text="2.Tiempo de gracia en minutos",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirTiempoGracia(ventana,pEstacionamiento)).pack(pady=5)
-    Button(ventana,text="3.Modificar monto por hora",font=("Century Gothic",12,"bold"),width=35,command=lambda:ejecutarFuncionPendiente("modificarMontoHora")).pack(pady=5)
+    Button(ventana,text="3.Modificar monto por hora",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirModificarMontoHora(ventana)).pack(pady=5)
     Button(ventana,text="4.Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
 
 def menuPrincipal(pEstacionamiento):
