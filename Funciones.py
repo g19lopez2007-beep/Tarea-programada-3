@@ -348,6 +348,34 @@ def guardarTamannoEstacionamientoTk(pVentanaPrincipal,pVentana,pEstacionamiento,
     messagebox.showinfo("Sistema de Parqueo","Tamaño del estacionamiento guardado correctamente.")
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
+#Funcion principal de la opcion 4b del menu
+def abrirTiempoGracia(pVentana,pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal y la lista del estacionamiento
+    -Salida:
+        Se muestra la ventana para configurar el tiempo de gracia
+    '''
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Tiempo de gracia")
+    ventana.geometry("500x300")
+    Label(ventana,text="TIEMPO DE GRACIA",font=("Century Gothic",14,"bold")).pack(pady=15)
+    configuracion=cargarConfiguracionAux()
+    if configuracion!=False:
+        textoActual="Tiempo actual: "+str(configuracion[1])+" minutos"
+    else:
+        textoActual="Tiempo actual: 0 minutos"
+    Label(ventana,text=textoActual,font=("Century Gothic",12)).pack(pady=5)
+    frame=Frame(ventana)
+    frame.pack()
+    Label(frame,text="Nuevo tiempo:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
+    tiempo=Entry(frame,font=("Century Gothic",12))
+    tiempo.grid(row=0,column=1,pady=5)
+    Button(ventana,text="Guardar",font=("Century Gothic",12,"bold"),width=35,command=lambda:guardarTiempoGraciaTk(pVentana,ventana,pEstacionamiento,tiempo)).pack(pady=10)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
+
 #Funcion principal de la opcion 5 del menu
 def abrirAcercaDe(pVentana):
     '''
