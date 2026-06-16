@@ -376,6 +376,24 @@ def abrirTiempoGracia(pVentana,pEstacionamiento):
     Button(ventana,text="Guardar",font=("Century Gothic",12,"bold"),width=35,command=lambda:guardarTiempoGraciaTk(pVentana,ventana,pEstacionamiento,tiempo)).pack(pady=10)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
 
+#Funcion principal de la opcion 4b del menu
+def guardarTiempoGraciaTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTiempo):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal, la ventana actual, el estacionamiento y el campo de tiempo
+    -Salida:
+        Se guarda el tiempo de gracia en la configuracion
+    '''
+    validar=validarTiempoGraciaAux(pTiempo.get())
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
+    tiempo=int(pTiempo.get())
+    guardarTiempoGraciaAux(tiempo)
+    messagebox.showinfo("Sistema de Parqueo","Tiempo de gracia guardado correctamente.")
+    regresarMenuPrincipal(pVentanaPrincipal,pVentana)
+
 #Funcion principal de la opcion 5 del menu
 def abrirAcercaDe(pVentana):
     '''
