@@ -1,7 +1,8 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 12/6/2026
+#Ultima fecha de modificacion: 15/6/2026
+
 from tkinter import messagebox
 import pickle
 import time
@@ -329,9 +330,7 @@ def guardarConfiguracionAux(pTamanno):
     -Salida:
         Se guarda la configuración en memoria secundaria
     '''
-    configuracion=cargarConfiguracionAux()
-    if configuracion==False:
-        configuracion=[0,0,0.0]
+    configuracion=obtenerConfiguracionAux()
     configuracion[0]=pTamanno
     archivo=open("configuracion.dat","wb")
     pickle.dump(configuracion,archivo)
@@ -382,10 +381,60 @@ def guardarTiempoGraciaAux(pTiempo):
     -Salida:
         Se guarda el tiempo de gracia en la configuracion del sistema
     '''
-    configuracion=cargarConfiguracionAux()
-    if configuracion==False:
-        configuracion=[0,0,0.0]
+    configuracion=obtenerConfiguracionAux()
     configuracion[1]=pTiempo
     archivo=open("configuracion.dat","wb")
     pickle.dump(configuracion,archivo)
     archivo.close()
+
+#Funcion Aux de configuracion
+def obtenerConfiguracionAux():
+    '''
+    Funcionamiento:
+    -Entrada:
+        No recibe datos
+    -Salida:
+        Se devuelve la configuración actual o se crea una nueva si no existe
+    '''
+    configuracion=cargarConfiguracionAux()
+    if configuracion==False:
+        configuracion=[0,0,0.0]
+        archivo=open("configuracion.dat","wb")
+        pickle.dump(configuracion,archivo)
+        archivo.close()
+    return configuracion
+
+#Funcion Aux de la opcion 4c del menu
+def validarMontoHoraAux(pMonto):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el monto por hora escrito por el usuario
+    -Salida:
+        Se devuelve True si el dato es válido o un mensaje indicando el formato correcto
+    '''
+    if pMonto.strip()=="":
+        return "Debe ingresar el monto por hora.\nFormato correcto: número positivo, por ejemplo: 1000 o 1000.50"
+    try:
+        monto=round(float(pMonto),2)
+    except:
+        return "El monto por hora debe escribirse con números.\nFormato correcto: 1000 o 1000.50"
+    if monto<=0:
+        return "El monto por hora debe ser mayor a 0.\nFormato correcto: 1000 o 1000.50"
+    return True
+
+#Funcion Aux de la opcion 4c del menu
+def guardarMontoHoraAux(pMonto):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el monto por hora
+    -Salida:
+        Se guarda el monto por hora en la configuración del sistema
+    '''
+    configuracion=obtenerConfiguracionAux()
+    configuracion[2]=round(float(pMonto),2)
+    archivo=open("configuracion.dat","wb")
+    pickle.dump(configuracion,archivo)
+    archivo.close()
+    return True
