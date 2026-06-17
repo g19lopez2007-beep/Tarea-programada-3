@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 16/6/2026
+#Ultima fecha de modificacion: 17/6/2026
 
 from tkinter import messagebox
 import pickle
@@ -398,7 +398,7 @@ def obtenerConfiguracionAux():
     '''
     configuracion=cargarConfiguracionAux()
     if configuracion==False:
-        configuracion=[0,0,0.0]
+        configuracion=[0,-1,0.0]
         archivo=open("configuracion.dat","wb")
         pickle.dump(configuracion,archivo)
         archivo.close()
@@ -438,3 +438,67 @@ def guardarMontoHoraAux(pMonto):
     pickle.dump(configuracion,archivo)
     archivo.close()
     return True
+
+#Funcion Aux para validar reportes
+def validarDatosReporteAux(pEstacionamiento,pConfiguracion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la lista del estacionamiento y la configuración del sistema
+    -Salida:
+        Se devuelve True si se puede generar el reporte o un mensaje indicando qué falta
+    '''
+    if len(pEstacionamiento)==0:
+        return "No se puede generar el reporte porque no hay vehículos cargados."
+    if pConfiguracion==False:
+        return "No se puede generar el reporte porque no existe configuración guardada."
+    if pConfiguracion[0]<=0:
+        return "No se puede generar el reporte porque falta configurar el tamaño del estacionamiento."
+    if pConfiguracion[2]<=0:
+        return "No se puede generar el reporte porque falta configurar el monto por hora."
+    return True
+
+#Funcion Aux para validar tiempo de gracia en reportes
+def validarTiempoGraciaReporteAux(pConfiguracion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la configuración del sistema
+    -Salida:
+        Se devuelve True si el tiempo de gracia está configurado o False si falta
+    '''
+    if pConfiguracion==False:
+        return False
+    if pConfiguracion[1]<0:
+        return False
+    return True
+
+#Funcion Aux para establecer tiempo de gracia en cero
+def establecerTiempoGraciaCeroAux(pConfiguracion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la configuración actual del sistema
+    -Salida:
+        Se guarda el tiempo de gracia en 0 sin cambiar los demás datos
+    '''
+    pConfiguracion[1]=0
+    archivo=open("configuracion.dat","wb")
+    pickle.dump(pConfiguracion,archivo)
+    archivo.close()
+
+#Funcion Aux para validar exportacion a CSV
+def validarExportarCierreDiarioCsvAux():
+    '''
+    Funcionamiento:
+    -Entrada:
+        No recibe datos
+    -Salida:
+        Se devuelve True si existe el cierre diario o un mensaje indicando por qué no puede continuar
+    '''
+    try:
+        archivo=open("cierreDiario.dat","rb")
+        archivo.close()
+        return True
+    except:
+        return "No se puede exportar a CSV porque todavía no existe un cierre diario generado."

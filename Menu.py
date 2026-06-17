@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 16/6/2026
+#Ultima fecha de modificacion: 17/6/2026
 
 from tkinter import *
 from Funciones import *
