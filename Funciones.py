@@ -300,6 +300,29 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
     messagebox.showinfo("Sistema de Parqueo","Vehículo estacionado correctamente.")
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
+#Funcion principal de la opcion 3a del menu
+def abrirCierreDiario(pVentana,pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal y la lista del estacionamiento
+    -Salida:
+        Se muestra el reporte de cierre diario
+    '''
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Cierre diario")
+    ventana.geometry("550x400")
+    Label(ventana,text="CIERRE DIARIO",font=("Century Gothic",14,"bold")).pack(pady=15)
+    datos=calcularCierreDiarioAux(pEstacionamiento)
+    texto=""
+    texto+="Cantidad de vehículos registrados: "+str(datos[0])+"\n"
+    texto+="Vehículos activos en el parqueo: "+str(datos[2])+"\n"
+    texto+="Vehículos retirados: "+str(datos[0]-datos[2])+"\n"
+    texto+="Ingreso total del día: ₡"+str(round(datos[1],2))+"\n"
+    Label(ventana,text=texto,font=("Century Gothic",12),justify="left").pack(pady=20)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
+
 #Funcion principal de la opcion 4a del menu
 def abrirTamannoEstacionamiento(pVentana,pEstacionamiento):
     '''
