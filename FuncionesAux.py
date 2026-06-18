@@ -302,6 +302,26 @@ def validarObservarEspacioAux(pUbicacion):
         return "Debe ingresar una ubicación.\nFormato correcto: G1, G2, G3"
     return True
 
+#Funcion Aux de la opcion 3a del menu
+def calcularCierreDiarioAux(pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la lista del estacionamiento
+    -Salida:
+        Se devuelve una lista con cantidad de vehiculos, total de ingresos y vehiculos activos
+    '''
+    cantidad=0
+    total=0
+    activos=0
+    for vehiculo in pEstacionamiento:
+        cantidad+=1
+        if vehiculo.fechaSalida!="":
+            total+=vehiculo.montoHora
+        else:
+            activos+=1
+    return [cantidad,total,activos]
+
 #Funcion Aux de la opcion 4a del menu
 def validarTamannoEstacionamientoAux(pTamanno):
     '''
