@@ -1,16 +1,16 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 17/6/2026
+#Ultima fecha de modificacion: 18/6/2026
 
 from tkinter import messagebox
+from PIL import Image,ImageDraw
+import urllib.request
 import pickle
 import time
 import random
 import json
-import urllib.request
 import qrcode
-from PIL import Image,ImageDraw
 
 #Funcion Aux para regresar al menu principal
 def regresarMenuPrincipal(pVentanaPrincipal,pVentanaActual):
@@ -35,36 +35,22 @@ def mostrarPendienteAux(pNombreFuncion):
     '''
     messagebox.showinfo("Sistema de Parqueo","Aquí tiene que ir la función "+pNombreFuncion)
 
-#Funcion Aux de la opcion 1 del menu
-def validarDatosObtenerVehiculosAux(pTamanno,pMonto,pApi):
+#Funcion Aux de configuracion
+def obtenerConfiguracionAux():
     '''
     Funcionamiento:
     -Entrada:
-        Se recibe el tamaño, monto por hora y URL de la API
+        No recibe datos
     -Salida:
-        Se devuelve True si los datos son válidos o un mensaje indicando el formato correcto
+        Se devuelve la configuración actual o se crea una nueva si no existe
     '''
-    if pTamanno.strip()=="":
-        return "Debe ingresar el tamaño del estacionamiento.\nFormato correcto: número entero positivo, por ejemplo: 20"
-    try:
-        tamanno=int(pTamanno)
-    except:
-        return "El tamaño del estacionamiento debe escribirse con números enteros.\nFormato correcto: 20"
-    if tamanno<3:
-        return "El tamaño del estacionamiento no es válido.\nFormato correcto: debe ser un número mayor o igual a 3"
-    if pMonto.strip()=="":
-        return "Debe ingresar el monto por hora.\nFormato correcto: número positivo, por ejemplo: 1000 o 1000.50"
-    try:
-        monto=round(float(pMonto),2)
-    except:
-        return "El monto por hora debe escribirse con números.\nFormato correcto: 1000 o 1000.50"
-    if monto<=0:
-        return "El monto por hora no es válido.\nFormato correcto: debe ser mayor a 0"
-    if pApi.strip()=="":
-        return "Debe ingresar la URL de la API.\nFormato correcto: https://myfakeapi.com/api/cars/"
-    if not(pApi.startswith("http://") or pApi.startswith("https://")):
-        return "La URL de la API no tiene el formato correcto.\nFormato correcto: debe iniciar con http:// o https://"
-    return True
+    configuracion=cargarConfiguracionAux()
+    if configuracion==False:
+        configuracion=[0,-1,0.0]
+        archivo=open("configuracion.dat","wb")
+        pickle.dump(configuracion,archivo)
+        archivo.close()
+    return configuracion
 
 #Funcion Aux de la opcion 1 del menu
 def calcularEspaciosEspecialesAux(pTamanno):
@@ -101,6 +87,21 @@ def calcularTopeMasivoAux(pTamanno,pElectrico):
     else:
         reserva=int(reserva)
     return disponibles-reserva
+
+#Funcion Aux de la opcion 1 del menu
+def validarApiAux(pApi):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la URL de la API
+    -Salida:
+        Se devuelve True si la URL es válida o un mensaje indicando el formato correcto
+    '''
+    if pApi.strip()=="":
+        return "Debe ingresar la URL de la API.\nFormato correcto: https://myfakeapi.com/api/cars/"
+    if not(pApi.startswith("http://") or pApi.startswith("https://")):
+        return "La URL de la API no tiene el formato correcto.\nFormato correcto: debe iniciar con http:// o https://"
+    return True
 
 #Funcion Aux de la opcion 1 del menu
 def obtenerJsonApiAux(pUrl,pCantidad):
@@ -255,6 +256,19 @@ def buscarVehiculoUbicacionAux(pEstacionamiento,pUbicacion):
     return False
 
 #Funcion Aux de la opcion 2 del menu
+def validarObservarEspacioAux(pUbicacion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ubicacion digitada
+    -Salida:
+        Se devuelve True si es valida o un mensaje de error
+    '''
+    if pUbicacion.strip()=="":
+        return "Debe ingresar una ubicación.\nFormato correcto: G1, G2, G3"
+    return True
+
+#Funcion Aux de la opcion 2 del menu
 def validarDatosEstacionarAux(pPlaca,pMarca,pColor,pTipo,pUbicacion):
     '''
     Funcionamiento:
@@ -289,40 +303,7 @@ def buscarVehiculoPlacaAux(pEstacionamiento,pPlaca):
             return True
     return False
 
-#Funcion Aux de la opcion 2 del menu
-def validarObservarEspacioAux(pUbicacion):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe la ubicacion digitada
-    -Salida:
-        Se devuelve True si es valida o un mensaje de error
-    '''
-    if pUbicacion.strip()=="":
-        return "Debe ingresar una ubicación.\nFormato correcto: G1, G2, G3"
-    return True
-
 #Funcion Aux de la opcion 3a del menu
-def calcularCierreDiarioAux(pEstacionamiento):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe la lista del estacionamiento
-    -Salida:
-        Se devuelve una lista con cantidad de vehiculos, total de ingresos y vehiculos activos
-    '''
-    cantidad=0
-    total=0
-    activos=0
-    for vehiculo in pEstacionamiento:
-        cantidad+=1
-        if vehiculo.fechaSalida!="":
-            total+=vehiculo.montoHora
-        else:
-            activos+=1
-    return [cantidad,total,activos]
-
-#Funcion Aux de la opcion 4a del menu
 def validarTamannoEstacionamientoAux(pTamanno):
     '''
     Funcionamiento:
@@ -341,7 +322,7 @@ def validarTamannoEstacionamientoAux(pTamanno):
         return "El tamaño del estacionamiento no es válido.\nFormato correcto: debe ser un número mayor o igual a 3"
     return True
 
-#Funcion Aux de la opcion 4a del menu
+#Funcion Aux de la opcion 3a del menu
 def guardarConfiguracionAux(pTamanno):
     '''
     Funcionamiento:
@@ -356,7 +337,7 @@ def guardarConfiguracionAux(pTamanno):
     pickle.dump(configuracion,archivo)
     archivo.close()
 
-#Funcion Aux de la opcion 4a del menu
+#Funcion Aux de la opcion 3a del menu
 def cargarConfiguracionAux():
     '''
     Funcionamiento:
@@ -373,58 +354,7 @@ def cargarConfiguracionAux():
     except:
         return False
 
-#Funcion Aux de la opcion 4b del menu
-def validarTiempoGraciaAux(pTiempo):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe el tiempo de gracia escrito por el usuario
-    -Salida:
-        Se devuelve True si el dato es valido o un mensaje de error
-    '''
-    if pTiempo.strip()=="":
-        return "Debe ingresar el tiempo de gracia.\nFormato correcto: número entero positivo, por ejemplo: 15"
-    try:
-        tiempo=int(pTiempo)
-    except:
-        return "El tiempo de gracia debe escribirse con números enteros.\nFormato correcto: 15"
-    if tiempo<0:
-        return "El tiempo de gracia no puede ser negativo.\nFormato correcto: 0, 5, 10, 15"
-    return True
-
-#Funcion Aux de la opcion 4b del menu
-def guardarTiempoGraciaAux(pTiempo):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe el tiempo de gracia en minutos
-    -Salida:
-        Se guarda el tiempo de gracia en la configuracion del sistema
-    '''
-    configuracion=obtenerConfiguracionAux()
-    configuracion[1]=pTiempo
-    archivo=open("configuracion.dat","wb")
-    pickle.dump(configuracion,archivo)
-    archivo.close()
-
-#Funcion Aux de configuracion
-def obtenerConfiguracionAux():
-    '''
-    Funcionamiento:
-    -Entrada:
-        No recibe datos
-    -Salida:
-        Se devuelve la configuración actual o se crea una nueva si no existe
-    '''
-    configuracion=cargarConfiguracionAux()
-    if configuracion==False:
-        configuracion=[0,-1,0.0]
-        archivo=open("configuracion.dat","wb")
-        pickle.dump(configuracion,archivo)
-        archivo.close()
-    return configuracion
-
-#Funcion Aux de la opcion 4c del menu
+#Funcion Aux de la opcion 3b del menu
 def validarMontoHoraAux(pMonto):
     '''
     Funcionamiento:
@@ -443,7 +373,7 @@ def validarMontoHoraAux(pMonto):
         return "El monto por hora debe ser mayor a 0.\nFormato correcto: 1000 o 1000.50"
     return True
 
-#Funcion Aux de la opcion 4c del menu
+#Funcion Aux de la opcion 3b del menu
 def guardarMontoHoraAux(pMonto):
     '''
     Funcionamiento:
@@ -458,6 +388,60 @@ def guardarMontoHoraAux(pMonto):
     pickle.dump(configuracion,archivo)
     archivo.close()
     return True
+
+#Funcion Aux de la opcion 3c del menu
+def validarTiempoGraciaAux(pTiempo):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el tiempo de gracia escrito por el usuario
+    -Salida:
+        Se devuelve True si el dato es valido o un mensaje de error
+    '''
+    if pTiempo.strip()=="":
+        return "Debe ingresar el tiempo de gracia.\nFormato correcto: número entero positivo, por ejemplo: 15"
+    try:
+        tiempo=int(pTiempo)
+    except:
+        return "El tiempo de gracia debe escribirse con números enteros.\nFormato correcto: 15"
+    if tiempo<0:
+        return "El tiempo de gracia no puede ser negativo.\nFormato correcto: 0, 5, 10, 15"
+    return True
+
+#Funcion Aux de la opcion 3c del menu
+def guardarTiempoGraciaAux(pTiempo):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el tiempo de gracia en minutos
+    -Salida:
+        Se guarda el tiempo de gracia en la configuracion del sistema
+    '''
+    configuracion=obtenerConfiguracionAux()
+    configuracion[1]=pTiempo
+    archivo=open("configuracion.dat","wb")
+    pickle.dump(configuracion,archivo)
+    archivo.close()
+
+#Funcion Aux de la opcion 4a del menu
+def calcularCierreDiarioAux(pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la lista del estacionamiento
+    -Salida:
+        Se devuelve una lista con cantidad de vehiculos, total de ingresos y vehiculos activos
+    '''
+    cantidad=0
+    total=0
+    activos=0
+    for vehiculo in pEstacionamiento:
+        cantidad+=1
+        if vehiculo.fechaSalida!="":
+            total+=vehiculo.montoHora
+        else:
+            activos+=1
+    return [cantidad,total,activos]
 
 #Funcion Aux para validar reportes
 def validarDatosReporteAux(pEstacionamiento,pConfiguracion):

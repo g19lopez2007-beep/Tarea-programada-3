@@ -1,10 +1,10 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 17/6/2026
+#Ultima fecha de modificacion: 18/6/2026
 
-from tkinter import *
 from Funciones import *
+from tkinter import *
 
 def abrirSubmenuVerEstacionamiento(pVentana,pEstacionamiento):
     '''
@@ -55,8 +55,8 @@ def abrirSubmenuConfiguracion(pVentana,pEstacionamiento):
     ventana.geometry("500x400")
     Label(ventana,text="CONFIGURACIÓN",font=("Century Gothic",14,"bold")).pack(pady=15)
     Button(ventana,text="1.Tamaño del estacionamiento",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirTamannoEstacionamiento(ventana,pEstacionamiento)).pack(pady=5)
-    Button(ventana,text="2.Tiempo de gracia en minutos",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirTiempoGracia(ventana,pEstacionamiento)).pack(pady=5)
-    Button(ventana,text="3.Modificar monto por hora",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirModificarMontoHora(ventana)).pack(pady=5)
+    Button(ventana,text="2.Modificar monto por hora",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirModificarMontoHora(ventana)).pack(pady=5)
+    Button(ventana,text="3.Tiempo de gracia en minutos",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirTiempoGracia(ventana,pEstacionamiento)).pack(pady=5)
     Button(ventana,text="4.Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
 
 def menuPrincipal(pEstacionamiento):
@@ -73,8 +73,8 @@ def menuPrincipal(pEstacionamiento):
     Label(ventana,text="SISTEMA DE PARQUEO",font=("Century Gothic",14,"bold")).pack(pady=15)
     Button(ventana,text="1.Obtener vehículos",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirObtenerVehiculos(ventana,pEstacionamiento)).pack(pady=5)
     Button(ventana,text="2.Ver estacionamiento",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirSubmenuVerEstacionamiento(ventana,pEstacionamiento)).pack(pady=5)
-    Button(ventana,text="3.Reportes",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirSubmenuReportes(ventana,pEstacionamiento)).pack(pady=5)
-    Button(ventana,text="4.Configuración",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirSubmenuConfiguracion(ventana,pEstacionamiento)).pack(pady=5)
+    Button(ventana,text="3.Configuración",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirSubmenuConfiguracion(ventana,pEstacionamiento)).pack(pady=5)
+    Button(ventana,text="4.Reportes",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirSubmenuReportes(ventana,pEstacionamiento)).pack(pady=5)
     Button(ventana,text="5.Acerca de",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirAcercaDe(ventana)).pack(pady=5)
     Button(ventana,text="6.Salir",font=("Century Gothic",12,"bold"),width=35,command=ventana.destroy).pack(pady=5)
     ventana.mainloop()

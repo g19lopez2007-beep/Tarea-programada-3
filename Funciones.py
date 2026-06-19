@@ -1,11 +1,11 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 17/6/2026
+#Ultima fecha de modificacion: 18/6/2026
 
 from FuncionesAux import *
-import pickle
 from tkinter import *
+import pickle
 
 #Funcion principal temporal para las opciones del sistema
 def ejecutarFuncionPendiente(pNombreFuncion):
@@ -79,7 +79,7 @@ def abrirObtenerVehiculos(pVentana,pEstacionamiento):
     pVentana.withdraw()
     ventanaObtener=Toplevel()
     ventanaObtener.title("Obtener vehículos")
-    ventanaObtener.geometry("650x500")
+    ventanaObtener.geometry("700x500")
     Label(ventanaObtener,text="OBTENER VEHÍCULOS",font=("Century Gothic",14,"bold")).pack(pady=15)
     frame=Frame(ventanaObtener)
     frame.pack()
@@ -90,13 +90,16 @@ def abrirObtenerVehiculos(pVentana,pEstacionamiento):
         tamanno.config(state="disabled")
         Label(frame,text="Máximo configurado: "+str(configuracion[0]),font=("Century Gothic",10)).grid(row=0,column=2,padx=10,pady=5,sticky="w")
     tamanno.grid(row=0,column=1,pady=5)
-    Label(frame,text="Espacio para carro eléctrico:",font=("Century Gothic",12)).grid(row=1,column=0,pady=5,sticky="w")
+    Label(frame,text="Monto por hora:",font=("Century Gothic",12)).grid(row=1,column=0,pady=5,sticky="w")
+    monto=Entry(frame,font=("Century Gothic",12))
+    if configuracion!=False and configuracion[2]>0:
+        monto.config(state="disabled")
+        Label(frame,text="Monto configurado: ₡"+str(configuracion[2]),font=("Century Gothic",10)).grid(row=1,column=2,padx=10,pady=5,sticky="w")
+    monto.grid(row=1,column=1,pady=5)
+    Label(frame,text="Espacio para carro eléctrico:",font=("Century Gothic",12)).grid(row=2,column=0,pady=5,sticky="w")
     electrico=StringVar()
     electrico.set("No")
-    OptionMenu(frame,electrico,"Sí","No").grid(row=1,column=1,pady=5,sticky="w")
-    Label(frame,text="Monto por hora:",font=("Century Gothic",12)).grid(row=2,column=0,pady=5,sticky="w")
-    monto=Entry(frame,font=("Century Gothic",12))
-    monto.grid(row=2,column=1,pady=5)
+    OptionMenu(frame,electrico,"Sí","No").grid(row=2,column=1,pady=5,sticky="w")
     Label(frame,text="URL de la API:",font=("Century Gothic",12)).grid(row=3,column=0,pady=5,sticky="w")
     api=Entry(frame,font=("Century Gothic",12),width=35)
     api.grid(row=3,column=1,pady=5)
@@ -113,6 +116,8 @@ def obtenerVehiculosTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno,pEle
         Se obtienen vehículos, se guardan como objetos, se generan los vouchers y se vuelve al menú
     '''
     configuracion=cargarConfiguracionAux()
+    guardarTamanno=False
+    guardarMonto=False
     if configuracion!=False and configuracion[0]>0:
         tamanno=configuracion[0]
     else:
@@ -121,12 +126,20 @@ def obtenerVehiculosTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno,pEle
             messagebox.showinfo("Sistema de Parqueo",validarTamanno)
             return
         tamanno=int(pTamanno.get())
-        guardarConfiguracionAux(tamanno)
-    validar=validarDatosObtenerVehiculosAux(str(tamanno),pMonto.get(),pApi.get())
-    if validar!=True:
-        messagebox.showinfo("Sistema de Parqueo",validar)
+        guardarTamanno=True
+    if configuracion!=False and configuracion[2]>0:
+        monto=configuracion[2]
+    else:
+        validarMonto=validarMontoHoraAux(pMonto.get())
+        if validarMonto!=True:
+            messagebox.showinfo("Sistema de Parqueo",validarMonto)
+            return
+        monto=round(float(pMonto.get()),2)
+        guardarMonto=True
+    validarApi=validarApiAux(pApi.get())
+    if validarApi!=True:
+        messagebox.showinfo("Sistema de Parqueo",validarApi)
         return
-    monto=round(float(pMonto.get()),2)
     if pElectrico.get()=="Sí":
         electrico=1
     else:
@@ -139,14 +152,15 @@ def obtenerVehiculosTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno,pEle
     if type(datos)==str:
         messagebox.showinfo("Sistema de Parqueo",datos)
         return
-    if len(datos)>cantidad:
-        messagebox.showinfo("Sistema de Parqueo","El tamaño del estacionamiento es menor que la cantidad de vehículos solicitados.\nMáximo permitido: "+str(cantidad))
-        return
     diccionario=crearDiccionarioVehiculosAux(datos,cantidad,monto)
     objetos=crearObjetosVehiculos(diccionario)
     pEstacionamiento.clear()
     for objeto in objetos:
         pEstacionamiento.append(objeto)
+    if guardarTamanno==True:
+        guardarConfiguracionAux(tamanno)
+    if guardarMonto==True:
+        guardarMontoHoraAux(monto)
     guardarEstacionamiento(pEstacionamiento)
     crearVouchersVehiculosAux(pEstacionamiento)
     messagebox.showinfo("Sistema de Parqueo","Se cargaron "+str(len(pEstacionamiento))+" vehículos correctamente.\nMáximo permitido por el estacionamiento: "+str(cantidad))
@@ -301,29 +315,6 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
 #Funcion principal de la opcion 3a del menu
-def abrirCierreDiario(pVentana,pEstacionamiento):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe la ventana principal y la lista del estacionamiento
-    -Salida:
-        Se muestra el reporte de cierre diario
-    '''
-    pVentana.withdraw()
-    ventana=Toplevel()
-    ventana.title("Cierre diario")
-    ventana.geometry("550x400")
-    Label(ventana,text="CIERRE DIARIO",font=("Century Gothic",14,"bold")).pack(pady=15)
-    datos=calcularCierreDiarioAux(pEstacionamiento)
-    texto=""
-    texto+="Cantidad de vehículos registrados: "+str(datos[0])+"\n"
-    texto+="Vehículos activos en el parqueo: "+str(datos[2])+"\n"
-    texto+="Vehículos retirados: "+str(datos[0]-datos[2])+"\n"
-    texto+="Ingreso total del día: ₡"+str(round(datos[1],2))+"\n"
-    Label(ventana,text=texto,font=("Century Gothic",12),justify="left").pack(pady=20)
-    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
-
-#Funcion principal de la opcion 4a del menu
 def abrirTamannoEstacionamiento(pVentana,pEstacionamiento):
     '''
     Funcionamiento:
@@ -345,7 +336,7 @@ def abrirTamannoEstacionamiento(pVentana,pEstacionamiento):
     Button(ventana,text="Guardar",font=("Century Gothic",12,"bold"),width=35,command=lambda:guardarTamannoEstacionamientoTk(pVentana,ventana,pEstacionamiento,tamanno)).pack(pady=10)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
 
-#Funcion principal de la opcion 4a del menu
+#Funcion principal de la opcion 3a del menu
 def guardarTamannoEstacionamientoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno):
     '''
     Funcionamiento:
@@ -371,7 +362,49 @@ def guardarTamannoEstacionamientoTk(pVentanaPrincipal,pVentana,pEstacionamiento,
     messagebox.showinfo("Sistema de Parqueo","Tamaño del estacionamiento guardado correctamente.")
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
-#Funcion principal de la opcion 4b del menu
+#Funcion principal de la opcion 3b del menu
+def abrirModificarMontoHora(pVentana):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal
+    -Salida:
+        Se muestra la ventana para modificar el monto por hora
+    '''
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Modificar monto por hora")
+    ventana.geometry("500x300")
+    Label(ventana,text="MODIFICAR MONTO POR HORA",font=("Century Gothic",14,"bold")).pack(pady=15)
+    frame=Frame(ventana)
+    frame.pack()
+    Label(frame,text="Nuevo monto:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
+    monto=Entry(frame,font=("Century Gothic",12))
+    monto.grid(row=0,column=1,pady=5)
+    Button(ventana,text="Guardar",font=("Century Gothic",12,"bold"),width=35,command=lambda:guardarMontoHoraTk(pVentana,ventana,monto)).pack(pady=10)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
+
+#Funcion principal de la opcion 3b del menu
+def guardarMontoHoraTk(pVentanaPrincipal,pVentana,pMonto):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal, la ventana actual y el monto por hora
+    -Salida:
+        Se valida y guarda el monto por hora en configuración
+    '''
+    validar=validarMontoHoraAux(pMonto.get())
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
+    resultado=guardarMontoHoraAux(pMonto.get())
+    if resultado!=True:
+        messagebox.showinfo("Sistema de Parqueo",resultado)
+        return
+    messagebox.showinfo("Sistema de Parqueo","Monto por hora guardado correctamente.")
+    regresarMenuPrincipal(pVentanaPrincipal,pVentana)
+
+#Funcion principal de la opcion 3c del menu
 def abrirTiempoGracia(pVentana,pEstacionamiento):
     '''
     Funcionamiento:
@@ -399,7 +432,7 @@ def abrirTiempoGracia(pVentana,pEstacionamiento):
     Button(ventana,text="Guardar",font=("Century Gothic",12,"bold"),width=35,command=lambda:guardarTiempoGraciaTk(pVentana,ventana,pEstacionamiento,tiempo)).pack(pady=10)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
 
-#Funcion principal de la opcion 4b del menu
+#Funcion principal de la opcion 3c del menu
 def guardarTiempoGraciaTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTiempo):
     '''
     Funcionamiento:
@@ -416,6 +449,29 @@ def guardarTiempoGraciaTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTiempo):
     guardarTiempoGraciaAux(tiempo)
     messagebox.showinfo("Sistema de Parqueo","Tiempo de gracia guardado correctamente.")
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
+
+#Funcion principal de la opcion 4a del menu
+def abrirCierreDiario(pVentana,pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal y la lista del estacionamiento
+    -Salida:
+        Se muestra el reporte de cierre diario
+    '''
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Cierre diario")
+    ventana.geometry("550x400")
+    Label(ventana,text="CIERRE DIARIO",font=("Century Gothic",14,"bold")).pack(pady=15)
+    datos=calcularCierreDiarioAux(pEstacionamiento)
+    texto=""
+    texto+="Cantidad de vehículos registrados: "+str(datos[0])+"\n"
+    texto+="Vehículos activos en el parqueo: "+str(datos[2])+"\n"
+    texto+="Vehículos retirados: "+str(datos[0]-datos[2])+"\n"
+    texto+="Ingreso total del día: ₡"+str(round(datos[1],2))+"\n"
+    Label(ventana,text=texto,font=("Century Gothic",12),justify="left").pack(pady=20)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
 
 #Funcion principal de la opcion 5 del menu
 def abrirAcercaDe(pVentana):
@@ -434,45 +490,3 @@ def abrirAcercaDe(pVentana):
     texto="\nCreadores:\nGustavo López Alvarado\nMel Acuña\n\nCurso:\nTaller de Programación\n\nInstitución:\nInstituto Tecnológico de Costa Rica."
     Label(ventana,text=texto,font=("Century Gothic",12),justify="center").pack(pady=20)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
-
-#Funcion principal de la opcion 4c del menu
-def abrirModificarMontoHora(pVentana):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe la ventana principal
-    -Salida:
-        Se muestra la ventana para modificar el monto por hora
-    '''
-    pVentana.withdraw()
-    ventana=Toplevel()
-    ventana.title("Modificar monto por hora")
-    ventana.geometry("500x300")
-    Label(ventana,text="MODIFICAR MONTO POR HORA",font=("Century Gothic",14,"bold")).pack(pady=15)
-    frame=Frame(ventana)
-    frame.pack()
-    Label(frame,text="Nuevo monto:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
-    monto=Entry(frame,font=("Century Gothic",12))
-    monto.grid(row=0,column=1,pady=5)
-    Button(ventana,text="Guardar",font=("Century Gothic",12,"bold"),width=35,command=lambda:guardarMontoHoraTk(pVentana,ventana,monto)).pack(pady=10)
-    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
-
-#Funcion principal de la opcion 4c del menu
-def guardarMontoHoraTk(pVentanaPrincipal,pVentana,pMonto):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe la ventana principal, la ventana actual y el monto por hora
-    -Salida:
-        Se valida y guarda el monto por hora en configuración
-    '''
-    validar=validarMontoHoraAux(pMonto.get())
-    if validar!=True:
-        messagebox.showinfo("Sistema de Parqueo",validar)
-        return
-    resultado=guardarMontoHoraAux(pMonto.get())
-    if resultado!=True:
-        messagebox.showinfo("Sistema de Parqueo",resultado)
-        return
-    messagebox.showinfo("Sistema de Parqueo","Monto por hora guardado correctamente.")
-    regresarMenuPrincipal(pVentanaPrincipal,pVentana)
