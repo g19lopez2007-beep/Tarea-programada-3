@@ -443,6 +443,39 @@ def calcularCierreDiarioAux(pEstacionamiento):
             activos+=1
     return [cantidad,total,activos]
 
+#Funcion Aux de la opcion 4b del menu
+def calcularCierreTipoPagoAux(pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la lista del estacionamiento
+    -Salida:
+        Se devuelve una lista con la cantidad e ingresos por tipo de pago
+    '''
+    efectivoCantidad=0
+    efectivoTotal=0
+    tarjetaCantidad=0
+    tarjetaTotal=0
+    sinpeCantidad=0
+    sinpeTotal=0
+    for vehiculo in pEstacionamiento:
+        if vehiculo.tipoPago==1:
+            efectivoCantidad+=1
+            efectivoTotal+=vehiculo.montoHora
+        elif vehiculo.tipoPago==2:
+            tarjetaCantidad+=1
+            tarjetaTotal+=vehiculo.montoHora
+        elif vehiculo.tipoPago==3:
+            sinpeCantidad+=1
+            sinpeTotal+=vehiculo.montoHora
+    return [
+        efectivoCantidad,
+        efectivoTotal,
+        tarjetaCantidad,
+        tarjetaTotal,
+        sinpeCantidad,
+        sinpeTotal]
+
 #Funcion Aux para validar reportes
 def validarDatosReporteAux(pEstacionamiento,pConfiguracion):
     '''
