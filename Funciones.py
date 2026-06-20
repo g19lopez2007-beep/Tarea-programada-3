@@ -473,6 +473,38 @@ def abrirCierreDiario(pVentana,pEstacionamiento):
     Label(ventana,text=texto,font=("Century Gothic",12),justify="left").pack(pady=20)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
 
+#Funcion principal de la opcion 4b del menu
+def abrirCierreTipoPago(pVentana,pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal y la lista del estacionamiento
+    -Salida:
+        Se muestra el cierre por tipo de pago
+    '''
+    validar=validarDatosReporteAux(pEstacionamiento,cargarConfiguracionAux())
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Cierre por tipo de pago")
+    ventana.geometry("600x450")
+    Label(ventana,text="CIERRE POR TIPO DE PAGO",font=("Century Gothic",14,"bold")).pack(pady=15)
+    datos=calcularCierreTipoPagoAux(pEstacionamiento)
+    texto=""
+    texto+="EFECTIVO\n"
+    texto+="Cantidad: "+str(datos[0])+"\n"
+    texto+="Ingresos: ₡"+str(round(datos[1],2))+"\n\n"
+    texto+="TARJETA\n"
+    texto+="Cantidad: "+str(datos[2])+"\n"
+    texto+="Ingresos: ₡"+str(round(datos[3],2))+"\n\n"
+    texto+="SINPE\n"
+    texto+="Cantidad: "+str(datos[4])+"\n"
+    texto+="Ingresos: ₡"+str(round(datos[5],2))
+    Label(ventana,text=texto,font=("Century Gothic",12),justify="left").pack(pady=20)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
+
 #Funcion principal de la opcion 5 del menu
 def abrirAcercaDe(pVentana):
     '''
