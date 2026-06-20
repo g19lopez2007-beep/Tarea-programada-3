@@ -37,7 +37,7 @@ def abrirSubmenuReportes(pVentana,pEstacionamiento):
     ventana.geometry("500x400")
     Label(ventana,text="REPORTES",font=("Century Gothic",14,"bold")).pack(pady=15)
     Button(ventana,text="1.Cierre diario",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirCierreDiario(ventana,pEstacionamiento)).pack(pady=5)
-    Button(ventana,text="2.Cierre por tipo de pago",font=("Century Gothic",12,"bold"),width=35,command=lambda:ejecutarFuncionPendiente("cierreTipoPago")).pack(pady=5)
+    Button(ventana,text="2.Cierre por tipo de pago",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirCierreTipoPago(ventana,pEstacionamiento)).pack(pady=5)
     Button(ventana,text="3.Exportar cierre diario a CSV",font=("Century Gothic",12,"bold"),width=35,command=lambda:ejecutarFuncionPendiente("exportarCierreDiarioCsv")).pack(pady=5)
     Button(ventana,text="4.Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
 
