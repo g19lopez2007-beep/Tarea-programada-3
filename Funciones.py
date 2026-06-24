@@ -506,6 +506,22 @@ def abrirCierreTipoPago(pVentana,pEstacionamiento):
     Label(ventana,text=texto,font=("Century Gothic",12),justify="left").pack(pady=20)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
 
+#Funcion principal de la opcion 4c del menu
+def abrirExportarCierreDiarioCsv(pVentana,pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal y la lista del estacionamiento
+    -Salida:
+        Se exporta el cierre diario a un archivo CSV
+    '''
+    validar=validarExportarCierreDiarioCsvAux()
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
+    nombre=exportarCierreDiarioCsvAux()
+    messagebox.showinfo("Sistema de Parqueo","El cierre diario se exportó correctamente.\nArchivo generado: "+nombre)
+    
 #Funcion principal de la opcion 5 del menu
 def abrirAcercaDe(pVentana):
     '''
