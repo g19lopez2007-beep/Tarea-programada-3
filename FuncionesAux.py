@@ -503,6 +503,23 @@ def cargarCierreDiarioDatAux():
     archivo.close()
     return datos
 
+#Funcion Aux de la opcion 4c del menu
+def exportarCierreDiarioCsvAux():
+    '''
+    Funcionamiento:
+    -Entrada:
+        No recibe datos
+    -Salida:
+        Se genera un archivo CSV con el cierre diario
+    '''
+    datos=cargarCierreDiarioDatAux()
+    nombre="cierre_diario_"+obtenerFechaArchivoAux()+".csv"
+    archivo=open(nombre,"w",encoding="utf-8")
+    archivo.write("Cantidad de vehiculos,Vehiculos activos,Vehiculos retirados,Ingreso total\n")
+    archivo.write(str(datos[0])+","+str(datos[2])+","+str(datos[0]-datos[2])+","+str(round(datos[1],2))+"\n")
+    archivo.close()
+    return nombre
+
 #Funcion Aux para validar reportes
 def validarDatosReporteAux(pEstacionamiento,pConfiguracion):
     '''
