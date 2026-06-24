@@ -465,6 +465,7 @@ def abrirCierreDiario(pVentana,pEstacionamiento):
     ventana.geometry("550x400")
     Label(ventana,text="CIERRE DIARIO",font=("Century Gothic",14,"bold")).pack(pady=15)
     datos=calcularCierreDiarioAux(pEstacionamiento)
+    guardarCierreDiarioDatAux(datos)
     texto=""
     texto+="Cantidad de vehículos registrados: "+str(datos[0])+"\n"
     texto+="Vehículos activos en el parqueo: "+str(datos[2])+"\n"
