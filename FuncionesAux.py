@@ -489,6 +489,20 @@ def guardarCierreDiarioDatAux(pDatos):
     pickle.dump(pDatos,archivo)
     archivo.close()
 
+#Funcion Aux de la opcion 4c del menu
+def cargarCierreDiarioDatAux():
+    '''
+    Funcionamiento:
+    -Entrada:
+        No recibe datos
+    -Salida:
+        Se devuelve el cierre diario guardado
+    '''
+    archivo=open("cierreDiario.dat","rb")
+    datos=pickle.load(archivo)
+    archivo.close()
+    return datos
+
 #Funcion Aux para validar reportes
 def validarDatosReporteAux(pEstacionamiento,pConfiguracion):
     '''
