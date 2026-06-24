@@ -476,6 +476,19 @@ def calcularCierreTipoPagoAux(pEstacionamiento):
         sinpeCantidad,
         sinpeTotal]
 
+#Funcion Aux de la opcion 4c del menu
+def guardarCierreDiarioDatAux(pDatos):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se reciben los datos del cierre diario
+    -Salida:
+        Se guarda el cierre diario en memoria secundaria
+    '''
+    archivo=open("cierreDiario.dat","wb")
+    pickle.dump(pDatos,archivo)
+    archivo.close()
+
 #Funcion Aux para validar reportes
 def validarDatosReporteAux(pEstacionamiento,pConfiguracion):
     '''
