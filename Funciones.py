@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 24/6/2026
+#Ultima fecha de modificacion: 25/6/2026
 
 from FuncionesAux import *
 from tkinter import *
@@ -283,18 +283,15 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
     if validar!=True:
         messagebox.showinfo("Sistema de Parqueo",validar)
         return
-    try:
-        monto=round(float(pMonto.get()),2)
-    except:
-        messagebox.showinfo("Sistema de Parqueo","El monto por hora debe ser numérico.\nEjemplo: 1000 o 1000.50")
+    validarMonto=validarMontoHoraAux(pMonto.get())
+    if validarMonto!=True:
+        messagebox.showinfo("Sistema de Parqueo",validarMonto)
         return
-    if monto<=0:
-        messagebox.showinfo("Sistema de Parqueo","El monto por hora debe ser mayor a 0.")
-        return
+    monto=round(float(pMonto.get()),2)
     placa=pPlaca.get().strip().upper()
-    marca=pMarca.get().strip()
-    color=pColor.get().strip()
-    tipo=pTipo.get().strip()
+    marca=pMarca.get().strip().title()
+    color=pColor.get().strip().lower()
+    tipo=pTipo.get().strip().lower()
     ubicacion=pUbicacion.get().strip().upper()
     existePlaca=buscarVehiculoPlacaAux(pEstacionamiento,placa)
     if existePlaca==True:
@@ -402,6 +399,11 @@ def guardarMontoHoraTk(pVentanaPrincipal,pVentana,pMonto):
     if validar!=True:
         messagebox.showinfo("Sistema de Parqueo",validar)
         return
+    configuracion=cargarConfiguracionAux()
+    if configuracion!=False and configuracion[2]>0:
+        confirmar=messagebox.askyesno("Sistema de Parqueo","Ya existe un monto por hora guardado.\nSi continúa, se reemplazará el monto anterior.\n¿Está seguro que desea continuar?")
+        if confirmar==False:
+            return
     resultado=guardarMontoHoraAux(pMonto.get())
     if resultado!=True:
         messagebox.showinfo("Sistema de Parqueo",resultado)
@@ -451,6 +453,11 @@ def guardarTiempoGraciaTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTiempo):
         messagebox.showinfo("Sistema de Parqueo",validar)
         return
     tiempo=int(pTiempo.get())
+    configuracion=cargarConfiguracionAux()
+    if configuracion!=False and configuracion[1]>=0:
+        confirmar=messagebox.askyesno("Sistema de Parqueo","Ya existe un tiempo de gracia guardado.\nSi continúa, se reemplazará el tiempo anterior.\n¿Está seguro que desea continuar?")
+        if confirmar==False:
+            return
     guardarTiempoGraciaAux(tiempo)
     messagebox.showinfo("Sistema de Parqueo","Tiempo de gracia guardado correctamente.")
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)

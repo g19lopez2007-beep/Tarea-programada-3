@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 24/6/2026
+#Ultima fecha de modificacion: 25/6/2026
 
 from tkinter import messagebox
 from PIL import Image,ImageDraw
@@ -278,18 +278,55 @@ def validarDatosEstacionarAux(pPlaca,pMarca,pColor,pTipo,pUbicacion):
     -Entrada:
         Se reciben los datos del vehiculo
     -Salida:
-        Se devuelve True si los datos son validos o un mensaje de error
+        Se devuelve True si los datos son validos o un mensaje indicando el formato correcto
     '''
-    if pPlaca.strip()=="":
-        return "Debe ingresar la placa del vehículo."
-    if pMarca.strip()=="":
-        return "Debe ingresar la marca del vehículo."
-    if pColor.strip()=="":
-        return "Debe ingresar el color del vehículo."
-    if pTipo.strip()=="":
-        return "Debe ingresar el tipo del vehículo."
-    if pUbicacion.strip()=="":
-        return "Debe ingresar la ubicación del vehículo.\nEjemplo: G1"
+    placa=pPlaca.strip().upper()
+    marca=pMarca.strip()
+    color=pColor.strip()
+    tipo=pTipo.strip()
+    ubicacion=pUbicacion.strip().upper()
+    if placa=="":
+        return "Debe ingresar la placa del vehículo.\nFormato correcto: letras y números, por ejemplo: ABC123"
+    if len(placa)<5 or len(placa)>8:
+        return "La placa no tiene el formato correcto.\nFormato correcto: letras y números, por ejemplo: ABC123"
+    if placa.isdigit() or placa.isalpha():
+        return "La placa debe combinar letras y números.\nFormato correcto: ABC123"
+    for caracter in placa:
+        if caracter.isalnum()==False:
+            return "La placa solo puede contener letras y números.\nFormato correcto: ABC123"
+    if marca=="":
+        return "Debe ingresar la marca del vehículo.\nFormato correcto: Toyota, Nissan, Hyundai"
+    if marca.isdigit():
+        return "La marca no puede ser solamente numérica.\nFormato correcto: Toyota, Nissan, Hyundai"
+    for caracter in marca:
+        if caracter.isalpha()==False and caracter!=" ":
+            return "La marca solo puede contener letras.\nFormato correcto: Toyota, Nissan, Hyundai"
+    if color=="":
+        return "Debe ingresar el color del vehículo.\nFormato correcto: rojo, blanco, negro"
+    if color.isdigit():
+        return "El color no puede ser numérico.\nFormato correcto: rojo, blanco, negro"
+    for caracter in color:
+        if caracter.isalpha()==False and caracter!=" ":
+            return "El color solo puede contener letras.\nFormato correcto: rojo, blanco, negro"
+    if tipo=="":
+        return "Debe ingresar el tipo del vehículo.\nFormato correcto: carro, moto, camion, bus, suv"
+    tiposValidos=["carro","moto","camion","bus","suv","pickup","automovil","motocicleta"]
+    if tipo.lower() not in tiposValidos:
+        return "El tipo de vehículo no tiene el formato correcto.\nFormato correcto: carro, moto, camion, bus, suv o pickup"
+    if ubicacion=="":
+        return "Debe ingresar la ubicación del vehículo.\nFormato correcto: G1, G2, G3"
+    if ubicacion[0]!="G":
+        return "La ubicación no tiene el formato correcto.\nFormato correcto: G1, G2, G3"
+    numero=ubicacion[1:]
+    if numero=="":
+        return "La ubicación debe incluir un número.\nFormato correcto: G1, G2, G3"
+    if numero.isdigit()==False:
+        return "La ubicación debe llevar la letra G seguida de un número.\nFormato correcto: G1, G2, G3"
+    configuracion=cargarConfiguracionAux()
+    if configuracion==False or configuracion[0]<=0:
+        return "Debe configurar primero el tamaño del estacionamiento."
+    if int(numero)<1 or int(numero)>configuracion[0]:
+        return "La ubicación no existe dentro del estacionamiento.\nTamaño actual: "+str(configuracion[0])+"\nFormato correcto: G1 hasta G"+str(configuracion[0])
     return True
 
 #Funcion Aux de la opcion 2 del menu
