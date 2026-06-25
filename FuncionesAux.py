@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 18/6/2026
+#Ultima fecha de modificacion: 24/6/2026
 
 from tkinter import messagebox
 from PIL import Image,ImageDraw
@@ -242,6 +242,22 @@ def obtenerFechaArchivoAux():
     return time.strftime("%d-%m-%Y_%H-%M")
 
 #Funcion Aux de la opcion 2 del menu
+def validarEstacionamientoCreadoAux():
+    '''
+    Funcionamiento:
+    -Entrada:
+        No recibe datos
+    -Salida:
+        Se devuelve True si el estacionamiento ya fue configurado o un mensaje indicando qué falta
+    '''
+    configuracion=cargarConfiguracionAux()
+    if configuracion==False:
+        return "Debe configurar primero el tamaño del estacionamiento."
+    if configuracion[0]<=0:
+        return "Debe configurar primero el tamaño del estacionamiento."
+    return True
+
+#Funcion Aux de la opcion 2 del menu
 def buscarVehiculoUbicacionAux(pEstacionamiento,pUbicacion):
     '''
     Funcionamiento:
@@ -254,19 +270,6 @@ def buscarVehiculoUbicacionAux(pEstacionamiento,pUbicacion):
         if vehiculo.ubicacion==pUbicacion:
             return vehiculo
     return False
-
-#Funcion Aux de la opcion 2 del menu
-def validarObservarEspacioAux(pUbicacion):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe la ubicacion digitada
-    -Salida:
-        Se devuelve True si es valida o un mensaje de error
-    '''
-    if pUbicacion.strip()=="":
-        return "Debe ingresar una ubicación.\nFormato correcto: G1, G2, G3"
-    return True
 
 #Funcion Aux de la opcion 2 del menu
 def validarDatosEstacionarAux(pPlaca,pMarca,pColor,pTipo,pUbicacion):

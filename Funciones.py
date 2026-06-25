@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 18/6/2026
+#Ultima fecha de modificacion: 24/6/2026
 
 from FuncionesAux import *
 from tkinter import *
@@ -181,47 +181,21 @@ def crearObjetosVehiculos(pDiccionario):
         lista.append(Vehiculo(placa,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5],datos[6],datos[7]))
     return lista
 
-#Funcion principal de la opcion 2 del menu
-def abrirObservarEspacio(pVentana,pEstacionamiento):
+def abrirDetalleEspacio(pVentana,pEstacionamiento,pUbicacion):
     '''
     Funcionamiento:
     -Entrada:
-        Se recibe la ventana principal y la lista del estacionamiento
+        Se recibe la ventana actual, la lista del estacionamiento y la ubicación seleccionada
     -Salida:
-        Se muestra la ventana para observar un espacio
+        Se muestra el detalle del espacio seleccionado
     '''
-    pVentana.withdraw()
     ventana=Toplevel()
-    ventana.title("Observar espacio")
+    ventana.title("Detalle del espacio")
     ventana.geometry("500x350")
-    Label(ventana,text="OBSERVAR ESPACIO",font=("Century Gothic",14,"bold")).pack(pady=15)
-    frame=Frame(ventana)
-    frame.pack()
-    Label(frame,text="Ubicación:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
-    ubicacion=Entry(frame,font=("Century Gothic",12))
-    ubicacion.grid(row=0,column=1,pady=5)
-    resultado=Label(ventana,text="",font=("Century Gothic",11),justify="left")
-    resultado.pack(pady=15)
-    Button(ventana,text="Buscar espacio",font=("Century Gothic",12,"bold"),width=30,command=lambda:observarEspacioTk(pEstacionamiento,ubicacion,resultado)).pack(pady=5)
-    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=30,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
-
-#Funcion principal de la opcion 2 del menu
-def observarEspacioTk(pEstacionamiento,pUbicacion,pResultado):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe la lista del estacionamiento, la ubicacion y el label de resultado
-    -Salida:
-        Se muestra la informacion del espacio consultado
-    '''
-    validar=validarObservarEspacioAux(pUbicacion.get())
-    if validar!=True:
-        messagebox.showinfo("Sistema de Parqueo",validar)
-        return
-    ubicacion=pUbicacion.get().strip()
-    vehiculo=buscarVehiculoUbicacionAux(pEstacionamiento,ubicacion)
+    Label(ventana,text="DETALLE DEL ESPACIO",font=("Century Gothic",14,"bold")).pack(pady=15)
+    vehiculo=buscarVehiculoUbicacionAux(pEstacionamiento,pUbicacion)
     if vehiculo==False:
-        pResultado.config(text="Ubicación: "+ubicacion+"\nEstado: Libre")
+        texto="Ubicación: "+pUbicacion+"\nEstado: Libre"
     else:
         texto=""
         texto+="Ubicación: "+vehiculo.ubicacion+"\n"
@@ -231,14 +205,40 @@ def observarEspacioTk(pEstacionamiento,pUbicacion,pResultado):
         texto+="Color: "+vehiculo.color+"\n"
         texto+="Tipo: "+vehiculo.tipo+"\n"
         texto+="Entrada: "+vehiculo.fechaEntrada
-        pResultado.config(text=texto)
+    Label(ventana,text=texto,font=("Century Gothic",12),justify="left").pack(pady=20)
+    Button(ventana,text="Cerrar",font=("Century Gothic",12,"bold"),width=30,command=ventana.destroy).pack(pady=10)
 
-#Funcion principal de la opcion 2 del menu
-def abrirEstacionarVehiculo(pVentana,pEstacionamiento):
+def refrescarEstacionamientoGrafico(pFrame,pEstacionamiento,pTamanno,pColumnas,pVentana):
     '''
     Funcionamiento:
     -Entrada:
-        Se recibe la ventana principal y la lista del estacionamiento
+        Se recibe el frame del estacionamiento, la lista de vehículos, el tamaño, las columnas y la ventana actual
+    -Salida:
+        Se actualizan los colores de los espacios del estacionamiento
+    '''
+    for widget in pFrame.winfo_children():
+        widget.destroy()
+    contador=1
+    while contador<=pTamanno:
+        ubicacion="G"+str(contador)
+        vehiculo=buscarVehiculoUbicacionAux(pEstacionamiento,ubicacion)
+        if vehiculo==False:
+            color="green"
+        else:
+            color="red"
+        Button(pFrame,text=ubicacion,font=("Century Gothic",10,"bold"),width=8,height=3,bg=color,fg="white",command=lambda pUbicacion=ubicacion:abrirDetalleEspacio(pVentana,pEstacionamiento,pUbicacion)).grid(row=(contador-1)//pColumnas,column=(contador-1)%pColumnas,padx=4,pady=4)
+        contador+=1
+    frameExtra=Frame(pFrame)
+    frameExtra.grid(row=((pTamanno-1)//pColumnas)+1,column=0,columnspan=pColumnas,pady=10)
+    Label(frameExtra,text="CASETILLA DE COBRO",font=("Century Gothic",11,"bold"),width=25,relief="solid").grid(row=0,column=0,padx=10)
+    Label(frameExtra,text="BAÑO SANITARIO",font=("Century Gothic",11,"bold"),width=25,relief="solid").grid(row=0,column=1,padx=10)
+
+#Funcion principal de la opcion 2 del menu
+def abrirEstacionarVehiculo(pVentana,pEstacionamiento,pActualizar=False):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal, la lista del estacionamiento y una función opcional para actualizar
     -Salida:
         Se muestra la ventana para estacionar un vehiculo manualmente
     '''
@@ -267,15 +267,15 @@ def abrirEstacionarVehiculo(pVentana,pEstacionamiento):
     Label(frame,text="Monto por hora:",font=("Century Gothic",12)).grid(row=5,column=0,pady=5,sticky="w")
     monto=Entry(frame,font=("Century Gothic",12))
     monto.grid(row=5,column=1,pady=5)
-    Button(ventana,text="Estacionar vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:estacionarVehiculoTk(pVentana,ventana,pEstacionamiento,placa,marca,color,tipo,ubicacion,monto)).pack(pady=10)
+    Button(ventana,text="Estacionar vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:estacionarVehiculoTk(pVentana,ventana,pEstacionamiento,placa,marca,color,tipo,ubicacion,monto,pActualizar)).pack(pady=10)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
 
 #Funcion principal de la opcion 2 del menu
-def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMarca,pColor,pTipo,pUbicacion,pMonto):
+def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMarca,pColor,pTipo,pUbicacion,pMonto,pActualizar=False):
     '''
     Funcionamiento:
     -Entrada:
-        Se reciben los datos del vehiculo digitados en la ventana
+        Se reciben los datos del vehiculo digitados en la ventana y una función opcional para actualizar
     -Salida:
         Se guarda el vehiculo en el estacionamiento
     '''
@@ -312,6 +312,11 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
     guardarEstacionamiento(pEstacionamiento)
     crearVouchersVehiculosAux([vehiculo])
     messagebox.showinfo("Sistema de Parqueo","Vehículo estacionado correctamente.")
+    if pActualizar!=False:
+        pVentana.destroy()
+        pVentanaPrincipal.deiconify()
+        pActualizar()
+        return
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
 #Funcion principal de la opcion 3a del menu

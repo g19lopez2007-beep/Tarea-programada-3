@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 18/6/2026
+#Ultima fecha de modificacion: 24/6/2026
 
 from Funciones import *
 from tkinter import *
@@ -12,16 +12,33 @@ def abrirSubmenuVerEstacionamiento(pVentana,pEstacionamiento):
     -Entrada:
         Se recibe la ventana principal y la lista del estacionamiento
     -Salida:
-        Se muestra el submenú de ver estacionamiento
+        Se muestra el estacionamiento gráficamente con espacios libres y ocupados
     '''
+    validar=validarEstacionamientoCreadoAux()
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
     pVentana.withdraw()
     ventana=Toplevel()
     ventana.title("Ver estacionamiento")
-    ventana.geometry("500x350")
-    Label(ventana,text="VER ESTACIONAMIENTO",font=("Century Gothic",14,"bold")).pack(pady=15)
-    Button(ventana,text="1.Observar espacio",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirObservarEspacio(ventana,pEstacionamiento)).pack(pady=5)
-    Button(ventana,text="2.Estacionar un vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirEstacionarVehiculo(ventana,pEstacionamiento)).pack(pady=5)
-    Button(ventana,text="3.Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
+    ventana.geometry("900x620")
+    Label(ventana,text="VER ESTACIONAMIENTO",font=("Century Gothic",14,"bold")).pack(pady=10)
+    contenedor=Frame(ventana)
+    contenedor.pack(padx=10,pady=5)
+    canvas=Canvas(contenedor,width=820,height=335)
+    barra=Scrollbar(contenedor,orient="vertical",command=canvas.yview)
+    frame=Frame(canvas)
+    frame.bind("<Configure>",lambda evento:canvas.configure(scrollregion=canvas.bbox("all")))
+    canvas.create_window((0,0),window=frame,anchor="nw")
+    canvas.configure(yscrollcommand=barra.set)
+    canvas.pack(side="left")
+    barra.pack(side="right",fill="y")
+    configuracion=cargarConfiguracionAux()
+    tamanno=configuracion[0]
+    columnas=10
+    refrescarEstacionamientoGrafico(frame,pEstacionamiento,tamanno,columnas,ventana)
+    Button(ventana,text="Estacionar un vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirEstacionarVehiculo(ventana,pEstacionamiento,lambda:refrescarEstacionamientoGrafico(frame,pEstacionamiento,tamanno,columnas,ventana))).pack(pady=2)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=2)
 
 def abrirSubmenuReportes(pVentana,pEstacionamiento):
     '''
