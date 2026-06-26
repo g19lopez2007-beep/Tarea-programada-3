@@ -431,7 +431,7 @@ def abrirRetirarVehiculo(pVentana,pEstacionamiento):
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
 
 #Funcion principal de la opcion 2c del menu
-def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPago):
+def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPago,):
     '''
     Funcionamiento:
     -Entrada:
@@ -461,6 +461,7 @@ def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPa
     datosPago=calcularMontoSalidaAux(vehiculo)
     monto=datosPago[3]
     guardarEstacionamiento(pEstacionamiento)
+    pActualizar=refrescarEstacionamientoGrafico
     texto=""
     texto+="Vehículo retirado correctamente.\n"
     texto+="Placa: "+vehiculo.placa+"\n"
