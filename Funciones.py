@@ -323,6 +323,60 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
         return
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
+#Funcion Aux de la opcion 2 del menu
+def validarDatosEstacionarAux(pPlaca,pMarca,pColor,pTipo,pUbicacion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se reciben los datos del vehiculo
+    -Salida:
+        Se devuelve True si los datos son validos o un mensaje de error
+    '''
+    if pPlaca.strip()=="":
+        return "Debe ingresar la placa del vehículo."
+    placa=pPlaca.strip().upper()
+    if len(placa)<5:
+        return "La placa no es válida.\nDebe tener al menos 5 caracteres."
+    for caracter in placa:
+        if caracter.isalnum()==False:
+            return "La placa no debe contener espacios ni símbolos."
+    if pMarca.strip()=="":
+        return "Debe ingresar la marca del vehículo."
+    marca=pMarca.strip()
+    if len(marca)<2:
+        return "La marca no es válida.\nDebe tener al menos 2 caracteres."
+    for caracter in marca:
+        if caracter.isalpha()==False and caracter!=" ":
+            return "La marca solo debe contener letras."
+    if pColor.strip()=="":
+        return "Debe ingresar el color del vehículo."
+    color=pColor.strip()
+    if len(color)<3:
+        return "El color no es válido.\nDebe tener al menos 3 caracteres."
+    for caracter in color:
+        if caracter.isalpha()==False and caracter!=" ":
+            return "El color solo debe contener letras."
+    if pTipo.strip()=="":
+        return "Debe ingresar el tipo del vehículo."
+    tipo=pTipo.strip()
+    if len(tipo)<3:
+        return "El tipo de vehículo no es válido.\nEjemplo: Sedan, SUV, Pickup, Moto."
+    if pUbicacion.strip()=="":
+        return "Debe ingresar la ubicación del vehículo.\nEjemplo: G1"
+    ubicacion=pUbicacion.strip().upper()
+    if ubicacion[0]!="G":
+        return "La ubicación debe iniciar con la letra G.\nEjemplo: G1, G2, G3"
+    numero=ubicacion[1:]
+    if numero=="":
+        return "La ubicación debe tener un número después de la G.\nEjemplo: G1"
+    try:
+        numero=int(numero)
+    except:
+        return "La ubicación debe tener formato correcto.\nEjemplo: G1, G2, G3"
+    if numero<=0:
+        return "La ubicación debe ser mayor a 0.\nEjemplo: G1"
+    return True
+
 #Funcion principal de la opcion 2c del menu
 def abrirRetirarVehiculo(pVentana,pEstacionamiento):
     '''
