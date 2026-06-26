@@ -324,6 +324,33 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
 #Funcion Aux de la opcion 2 del menu
+def validarUbicacionDisponibleAux(pEstacionamiento,pUbicacion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el estacionamiento y la ubicacion
+    -Salida:
+        Se devuelve True si la ubicacion existe y esta libre o un mensaje de error
+    '''
+    configuracion=cargarConfiguracionAux()
+    if configuracion==False:
+        return "Debe configurar primero el tamaño del estacionamiento."
+    tamanno=configuracion[0]
+    if tamanno<=0:
+        return "Debe configurar primero el tamaño del estacionamiento."
+    ubicacion=pUbicacion.strip().upper()
+    try:
+        numero=int(ubicacion[1:])
+    except:
+        return "La ubicación debe tener formato correcto.\nEjemplo: G1"
+    if numero>tamanno:
+        return "La ubicación no existe.\nEl estacionamiento llega hasta G"+str(tamanno)+"."
+    vehiculo=buscarVehiculoUbicacionAux(pEstacionamiento,ubicacion)
+    if vehiculo!=False and vehiculo.fechaSalida=="":
+        return "La ubicación ya está ocupada."
+    return True
+
+#Funcion Aux de la opcion 2 del menu
 def validarDatosEstacionarAux(pPlaca,pMarca,pColor,pTipo,pUbicacion):
     '''
     Funcionamiento:
