@@ -405,7 +405,7 @@ def validarDatosEstacionarAux(pPlaca,pMarca,pColor,pTipo,pUbicacion):
     return True
 
 #Funcion principal de la opcion 2c del menu
-def abrirRetirarVehiculo(pVentana,pEstacionamiento):
+def abrirRetirarVehiculo(pVentana,pEstacionamiento,pActualizar=False):
     '''
     Funcionamiento:
     -Entrada:
@@ -427,11 +427,11 @@ def abrirRetirarVehiculo(pVentana,pEstacionamiento):
     tipoPago=StringVar()
     tipoPago.set("Efectivo")
     OptionMenu(frame,tipoPago,"Efectivo","Tarjeta","SINPE").grid(row=1,column=1,pady=5,sticky="w")
-    Button(ventana,text="Retirar vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:retirarVehiculoTk(pVentana,ventana,pEstacionamiento,placa,tipoPago)).pack(pady=15)
+    Button(ventana,text="Retirar vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:retirarVehiculoTk(pVentana,ventana,pEstacionamiento,placa,tipoPago,pActualizar)).pack(pady=15)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
 
 #Funcion principal de la opcion 2c del menu
-def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPago,):
+def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPago,pActualizar=False):
     '''
     Funcionamiento:
     -Entrada:
@@ -461,7 +461,8 @@ def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPa
     datosPago=calcularMontoSalidaAux(vehiculo)
     monto=datosPago[3]
     guardarEstacionamiento(pEstacionamiento)
-    pActualizar=refrescarEstacionamientoGrafico
+    if pActualizar:
+        pActualizar()
     texto=""
     texto+="Vehículo retirado correctamente.\n"
     texto+="Placa: "+vehiculo.placa+"\n"

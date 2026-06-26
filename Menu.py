@@ -38,7 +38,7 @@ def abrirSubmenuVerEstacionamiento(pVentana,pEstacionamiento):
     columnas=10
     refrescarEstacionamientoGrafico(frame,pEstacionamiento,tamanno,columnas,ventana)
     Button(ventana,text="Estacionar un vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirEstacionarVehiculo(ventana,pEstacionamiento,lambda:refrescarEstacionamientoGrafico(frame,pEstacionamiento,tamanno,columnas,ventana))).pack(pady=2)
-    Button(ventana,text="Retirar un vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirRetirarVehiculo(ventana,pEstacionamiento)).pack(pady=2)
+    Button(ventana,text="Retirar un vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:abrirRetirarVehiculo(ventana,pEstacionamiento,lambda:refrescarEstacionamientoGrafico(frame,pEstacionamiento,tamanno,columnas,ventana))).pack(pady=2)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=2)
 
 def abrirSubmenuReportes(pVentana,pEstacionamiento):
