@@ -140,6 +140,9 @@ def obtenerVehiculosTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno,pEle
     if validarApi!=True:
         messagebox.showinfo("Sistema de Parqueo",validarApi)
         return
+    confirmar=validarReinicioEstacionamientoAux(pEstacionamiento)
+    if confirmar==False:
+     return
     if pElectrico.get()=="Sí":
         electrico=1
     else:
@@ -151,6 +154,10 @@ def obtenerVehiculosTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno,pEle
     datos=obtenerJsonApiAux(pApi.get(),cantidad)
     if type(datos)==str:
         messagebox.showinfo("Sistema de Parqueo",datos)
+        return
+    validarDatos=validarDatosApiObtenidosAux(datos)
+    if validarDatos!=True:
+        messagebox.showinfo("Sistema de Parqueo",validarDatos)
         return
     diccionario=crearDiccionarioVehiculosAux(datos,cantidad,monto)
     objetos=crearObjetosVehiculos(diccionario)
