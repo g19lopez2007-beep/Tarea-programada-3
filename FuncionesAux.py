@@ -241,6 +241,36 @@ def obtenerFechaArchivoAux():
     '''
     return time.strftime("%d-%m-%Y_%H-%M")
 
+#Funcion Aux de la opcion 1 del menu
+def validarDatosApiObtenidosAux(pDatos):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se reciben los datos obtenidos desde la API
+    -Salida:
+        Se devuelve True si los datos son validos o un mensaje de error
+    '''
+    if type(pDatos)!=list:
+        return "La API no devolvió una lista válida de vehículos."
+    if len(pDatos)==0:
+        return "La API no devolvió vehículos."
+    return True
+
+#Funcion Aux de la opcion 1 del menu
+def validarReinicioEstacionamientoAux(pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la lista del estacionamiento
+    -Salida:
+        Se devuelve True si se puede cargar o False si el usuario cancela
+    '''
+    if len(pEstacionamiento)>0:
+        confirmar=messagebox.askyesno("Sistema de Parqueo","Ya existen vehículos cargados.\nSi continúa se reemplazará el estacionamiento actual.\n¿Desea continuar?")
+        if confirmar==False:
+            return False
+    return True
+
 #Funcion Aux de la opcion 2 del menu
 def validarEstacionamientoCreadoAux():
     '''
