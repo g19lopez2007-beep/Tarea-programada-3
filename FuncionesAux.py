@@ -413,15 +413,69 @@ def obtenerFechaHoraSalidaAux():
     return time.strftime("%d/%m/%Y %H:%M",actual)
 
 #Funcion Aux de la opcion 2c del menu
+def convertirFechaMinutosAux(pFecha):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe una fecha en formato dd/mm/yyyy hh:mm
+    -Salida:
+        Se devuelve la fecha convertida a minutos
+    '''
+    dia=int(pFecha[0:2])
+    mes=int(pFecha[3:5])
+    anno=int(pFecha[6:10])
+    hora=int(pFecha[11:13])
+    minuto=int(pFecha[14:16])
+    total=0
+    total+=anno*525600
+    total+=mes*43200
+    total+=dia*1440
+    total+=hora*60
+    total+=minuto
+    return total
+
+#Funcion Aux de la opcion 2c del menu
+def calcularTiempoPermanenciaAux(pFechaEntrada,pFechaSalida):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la fecha de entrada y la fecha de salida
+    -Salida:
+        Se devuelve la cantidad de minutos que estuvo el vehiculo
+    '''
+    entrada=convertirFechaMinutosAux(pFechaEntrada)
+    salida=convertirFechaMinutosAux(pFechaSalida)
+    minutos=salida-entrada
+    if minutos<0:
+        minutos=0
+    return minutos
+
+#Funcion Aux de la opcion 2c del menu
 def calcularMontoSalidaAux(pVehiculo):
     '''
     Funcionamiento:
     -Entrada:
-        Se recibe el vehículo
+        Se recibe el vehiculo
     -Salida:
-        Se devuelve el monto a pagar
+        Se devuelve una lista con minutos, minutos cobrados, horas cobradas y monto a pagar
     '''
-    return round(float(pVehiculo.montoHora),2)
+    configuracion=obtenerConfiguracionAux()
+    tiempoGracia=configuracion[1]
+    if tiempoGracia<0:
+        tiempoGracia=0
+    minutos=calcularTiempoPermanenciaAux(pVehiculo.fechaEntrada,pVehiculo.fechaSalida)
+    minutosCobrados=minutos-tiempoGracia
+    if minutosCobrados<=0:
+        horas=0
+        monto=0
+    else:
+        horas=minutosCobrados/60
+        if horas>int(horas):
+            horas=int(horas)+1
+        else:
+            horas=int(horas)
+        monto=horas*pVehiculo.montoHora
+    return [minutos,minutosCobrados,horas,round(monto,2)]
 
 #Funcion Aux de la opcion 3a del menu
 def validarTamannoEstacionamientoAux(pTamanno):
