@@ -323,6 +323,71 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
         return
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
+#Funcion principal de la opcion 2c del menu
+def abrirRetirarVehiculo(pVentana,pEstacionamiento):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ventana principal y la lista del estacionamiento
+    -Salida:
+        Se muestra la ventana para retirar un vehículo
+    '''
+    pVentana.withdraw()
+    ventana=Toplevel()
+    ventana.title("Retirar vehículo")
+    ventana.geometry("550x400")
+    Label(ventana,text="RETIRAR VEHÍCULO",font=("Century Gothic",14,"bold")).pack(pady=15)
+    frame=Frame(ventana)
+    frame.pack()
+    Label(frame,text="Placa:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
+    placa=Entry(frame,font=("Century Gothic",12))
+    placa.grid(row=0,column=1,pady=5)
+    Label(frame,text="Tipo de pago:",font=("Century Gothic",12)).grid(row=1,column=0,pady=5,sticky="w")
+    tipoPago=StringVar()
+    tipoPago.set("Efectivo")
+    OptionMenu(frame,tipoPago,"Efectivo","Tarjeta","SINPE").grid(row=1,column=1,pady=5,sticky="w")
+    Button(ventana,text="Retirar vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:retirarVehiculoTk(pVentana,ventana,pEstacionamiento,placa,tipoPago)).pack(pady=15)
+    Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
+
+#Funcion principal de la opcion 2c del menu
+def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPago):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la placa y el tipo de pago seleccionado
+    -Salida:
+        Se registra la salida del vehículo
+    '''
+    validar=validarRetirarVehiculoAux(pPlaca.get())
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
+    placa=pPlaca.get().strip().upper()
+    vehiculo=buscarVehiculoObjetoPlacaAux(pEstacionamiento,placa)
+    if vehiculo==False:
+        messagebox.showinfo("Sistema de Parqueo","No existe un vehículo con esa placa.")
+        return
+    if vehiculo.fechaSalida!="":
+        messagebox.showinfo("Sistema de Parqueo","Ese vehículo ya fue retirado.")
+        return
+    if pTipoPago.get()=="Efectivo":
+        vehiculo.tipoPago=1
+    elif pTipoPago.get()=="Tarjeta":
+        vehiculo.tipoPago=2
+    else:
+        vehiculo.tipoPago=3
+    vehiculo.fechaSalida=obtenerFechaHoraSalidaAux()
+    monto=calcularMontoSalidaAux(vehiculo)
+    guardarEstacionamiento(pEstacionamiento)
+    texto=""
+    texto+="Vehículo retirado correctamente.\n"
+    texto+="Placa: "+vehiculo.placa+"\n"
+    texto+="Ubicación liberada: "+vehiculo.ubicacion+"\n"
+    texto+="Fecha salida: "+vehiculo.fechaSalida+"\n"
+    texto+="Monto a pagar: ₡"+str(monto)
+    messagebox.showinfo("Sistema de Parqueo",texto)
+    regresarMenuPrincipal(pVentanaPrincipal,pVentana)
+
 #Funcion principal de la opcion 3a del menu
 def abrirTamannoEstacionamiento(pVentana,pEstacionamiento):
     '''
