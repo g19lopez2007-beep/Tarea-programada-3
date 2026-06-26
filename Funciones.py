@@ -458,13 +458,17 @@ def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPa
     else:
         vehiculo.tipoPago=3
     vehiculo.fechaSalida=obtenerFechaHoraSalidaAux()
-    monto=calcularMontoSalidaAux(vehiculo)
+    datosPago=calcularMontoSalidaAux(vehiculo)
+    monto=datosPago[3]
     guardarEstacionamiento(pEstacionamiento)
     texto=""
     texto+="Vehículo retirado correctamente.\n"
     texto+="Placa: "+vehiculo.placa+"\n"
     texto+="Ubicación liberada: "+vehiculo.ubicacion+"\n"
     texto+="Fecha salida: "+vehiculo.fechaSalida+"\n"
+    texto+="Tiempo total: "+str(datosPago[0])+" minutos\n"
+    texto+="Tiempo cobrado: "+str(datosPago[1])+" minutos\n"
+    texto+="Horas cobradas: "+str(datosPago[2])+"\n"
     texto+="Monto a pagar: ₡"+str(monto)
     messagebox.showinfo("Sistema de Parqueo",texto)
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
