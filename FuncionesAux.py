@@ -373,6 +373,56 @@ def buscarVehiculoPlacaAux(pEstacionamiento,pPlaca):
             return True
     return False
 
+#Funcion Aux de la opcion 2c del menu
+def validarRetirarVehiculoAux(pPlaca):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la placa del vehículo
+    -Salida:
+        Se devuelve True si la placa es válida o un mensaje de error
+    '''
+    if pPlaca.strip()=="":
+        return "Debe ingresar la placa del vehículo."
+    return True
+
+#Funcion Aux de la opcion 2c del menu
+def buscarVehiculoObjetoPlacaAux(pEstacionamiento,pPlaca):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la lista del estacionamiento y la placa a buscar
+    -Salida:
+        Se devuelve el vehículo encontrado o False si no existe
+    '''
+    for vehiculo in pEstacionamiento:
+        if vehiculo.placa==pPlaca:
+            return vehiculo
+    return False
+
+#Funcion Aux de la opcion 2c del menu
+def obtenerFechaHoraSalidaAux():
+    '''
+    Funcionamiento:
+    -Entrada:
+        No recibe datos
+    -Salida:
+        Se devuelve la fecha y hora actual como salida
+    '''
+    actual=time.localtime()
+    return time.strftime("%d/%m/%Y %H:%M",actual)
+
+#Funcion Aux de la opcion 2c del menu
+def calcularMontoSalidaAux(pVehiculo):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el vehículo
+    -Salida:
+        Se devuelve el monto a pagar
+    '''
+    return round(float(pVehiculo.montoHora),2)
+
 #Funcion Aux de la opcion 3a del menu
 def validarTamannoEstacionamientoAux(pTamanno):
     '''
