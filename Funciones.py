@@ -304,9 +304,9 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
     if existePlaca==True:
         messagebox.showinfo("Sistema de Parqueo","Ya existe un vehículo con esa placa.")
         return
-    existeUbicacion=buscarVehiculoUbicacionAux(pEstacionamiento,ubicacion)
-    if existeUbicacion!=False:
-        messagebox.showinfo("Sistema de Parqueo","La ubicación ya está ocupada.")
+    validarUbicacion=validarUbicacionDisponibleAux(pEstacionamiento,ubicacion)
+    if validarUbicacion!=True:
+        messagebox.showinfo("Sistema de Parqueo",validarUbicacion)
         return
     fechaEntrada=generarFechaHoraEntradaAux()
     fechaSalida=""
