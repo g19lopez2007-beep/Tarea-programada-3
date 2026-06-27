@@ -36,6 +36,7 @@ class Vehiculo:
         self.fechaSalida=pFechaSalida
         self.montoHora=pMontoHora
         self.tipoPago=pTipoPago
+        self.montoPagado=0
 
 #Funcion principal de carga inicial del menu
 def cargarEstacionamiento():
