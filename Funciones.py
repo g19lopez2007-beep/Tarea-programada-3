@@ -651,7 +651,7 @@ def abrirCierreDiario(pVentana,pEstacionamiento):
     guardarCierreDiarioDatAux(datos)
     guardarEstacionamiento(pEstacionamiento)
     texto=""
-    texto+="Vehículos procesados: "+str(len(datos[0]))+"\n"
+    texto+="Vehículos cobrados: "+str(len(datos[0]))+"\n"
     texto+="Total efectivo: ₡"+str(datos[3])+"\n"
     texto+="Total tarjeta: ₡"+str(datos[5])+"\n"
     texto+="Total SINPE: ₡"+str(datos[7])+"\n"
