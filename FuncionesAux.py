@@ -294,10 +294,10 @@ def buscarVehiculoUbicacionAux(pEstacionamiento,pUbicacion):
     -Entrada:
         Se recibe la lista del estacionamiento y la ubicacion a buscar
     -Salida:
-        Se devuelve el vehiculo encontrado o False si no existe
+        Se devuelve el vehiculo activo encontrado o False si no existe
     '''
     for vehiculo in pEstacionamiento:
-        if vehiculo.ubicacion==pUbicacion:
+        if vehiculo.ubicacion==pUbicacion and vehiculo.fechaSalida=="":
             return vehiculo
     return False
 
