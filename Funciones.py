@@ -461,6 +461,7 @@ def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPa
     vehiculo.fechaSalida=obtenerFechaHoraSalidaAux()
     datosPago=calcularMontoSalidaAux(vehiculo)
     monto=datosPago[3]
+    vehiculo.montoPagado=monto
     guardarEstacionamiento(pEstacionamiento)
     if pActualizar:
         pActualizar()
