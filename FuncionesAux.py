@@ -636,35 +636,22 @@ def calcularCierreDiarioAux(pEstacionamiento):
     -Entrada:
         Se recibe la lista del estacionamiento
     -Salida:
-        Se devuelve la información completa del cierre diario
+        Se devuelve una lista con cantidad de vehiculos cobrados, total de ingresos y vehiculos activos
     '''
-    registros=[]
-    totalGeneral=0
-    efectivoCantidad=0
-    efectivoTotal=0
-    tarjetaCantidad=0
-    tarjetaTotal=0
-    sinpeCantidad=0
-    sinpeTotal=0
+    cobrados=0
+    total=0
+    activos=0
     for vehiculo in pEstacionamiento:
         if vehiculo.fechaSalida=="":
-            vehiculo.fechaSalida=obtenerFechaHoraSalidaAux()
-        if vehiculo.tipoPago==0:
-            vehiculo.tipoPago=random.randint(1,3)
-        monto=obtenerMontoPagadoAux(vehiculo)
-        tipoPago=obtenerNombreTipoPagoAux(vehiculo.tipoPago)
-        registros.append([vehiculo.ubicacion,vehiculo.placa,vehiculo.fechaEntrada,vehiculo.fechaSalida,tipoPago,monto])
-        totalGeneral+=monto
-        if vehiculo.tipoPago==1:
-            efectivoCantidad+=1
-            efectivoTotal+=monto
-        elif vehiculo.tipoPago==2:
-            tarjetaCantidad+=1
-            tarjetaTotal+=monto
-        elif vehiculo.tipoPago==3:
-            sinpeCantidad+=1
-            sinpeTotal+=monto
-    return [registros,round(totalGeneral,2),efectivoCantidad,round(efectivoTotal,2),tarjetaCantidad,round(tarjetaTotal,2),sinpeCantidad,round(sinpeTotal,2)]
+            activos+=1
+        else:
+            cobrados+=1
+            try:
+                total+=vehiculo.montoPagado
+            except:
+                datosPago=calcularMontoSalidaAux(vehiculo)
+                total+=datosPago[3]
+    return [cobrados,total,activos]
 
 #Funcion Aux de la opcion 4b del menu
 def calcularCierreTipoPagoAux(pEstacionamiento):
