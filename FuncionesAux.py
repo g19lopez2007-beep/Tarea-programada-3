@@ -670,11 +670,13 @@ def calcularCierreTipoPagoAux(pEstacionamiento):
     sinpeTotal=0
     for vehiculo in pEstacionamiento:
         if vehiculo.fechaSalida!="":
+
             try:
                 monto=vehiculo.montoPagado
             except:
                 datosPago=calcularMontoSalidaAux(vehiculo)
                 monto=datosPago[3]
+                vehiculo.montoPagado=monto
             if vehiculo.tipoPago==1:
                 efectivoCantidad+=1
                 efectivoTotal+=monto
@@ -684,14 +686,14 @@ def calcularCierreTipoPagoAux(pEstacionamiento):
             elif vehiculo.tipoPago==3:
                 sinpeCantidad+=1
                 sinpeTotal+=monto
-
     return [
         efectivoCantidad,
-        efectivoTotal,
+        round(efectivoTotal,2),
         tarjetaCantidad,
-        tarjetaTotal,
+        round(tarjetaTotal,2),
         sinpeCantidad,
-        sinpeTotal]
+        round(sinpeTotal,2)
+    ]
 
 #Funcion Aux de la opcion 4c del menu
 def guardarCierreDiarioDatAux(pDatos):
