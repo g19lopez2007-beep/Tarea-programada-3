@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 25/6/2026
+#Ultima fecha de modificacion: 26/6/2026
 
 from FuncionesAux import *
 from tkinter import *
@@ -630,19 +630,37 @@ def abrirCierreDiario(pVentana,pEstacionamiento):
     -Salida:
         Se muestra el reporte de cierre diario
     '''
+    configuracion=cargarConfiguracionAux()
+    validar=validarDatosReporteAux(pEstacionamiento,configuracion)
+    if validar!=True:
+        messagebox.showinfo("Sistema de Parqueo",validar)
+        return
+    if validarTiempoGraciaReporteAux(configuracion)==False:
+        confirmar=messagebox.askyesno("Sistema de Parqueo","El tiempo de gracia todavía no está configurado.\nSi continúa, se usará 0 minutos.\n¿Desea continuar?")
+        if confirmar==False:
+            return
+        establecerTiempoGraciaCeroAux(configuracion)
     pVentana.withdraw()
     ventana=Toplevel()
     ventana.title("Cierre diario")
-    ventana.geometry("550x400")
+    ventana.geometry("800x550")
     Label(ventana,text="CIERRE DIARIO",font=("Century Gothic",14,"bold")).pack(pady=15)
     datos=calcularCierreDiarioAux(pEstacionamiento)
     guardarCierreDiarioDatAux(datos)
+    guardarEstacionamiento(pEstacionamiento)
     texto=""
-    texto+="Cantidad de vehículos registrados: "+str(datos[0])+"\n"
-    texto+="Vehículos activos en el parqueo: "+str(datos[2])+"\n"
-    texto+="Vehículos retirados: "+str(datos[0]-datos[2])+"\n"
-    texto+="Ingreso total del día: ₡"+str(round(datos[1],2))+"\n"
-    Label(ventana,text=texto,font=("Century Gothic",12),justify="left").pack(pady=20)
+    texto+="Vehículos procesados: "+str(len(datos[0]))+"\n"
+    texto+="Total efectivo: ₡"+str(datos[3])+"\n"
+    texto+="Total tarjeta: ₡"+str(datos[5])+"\n"
+    texto+="Total SINPE: ₡"+str(datos[7])+"\n"
+    texto+="Total general: ₡"+str(datos[1])+"\n\n"
+    texto+="Ubicación | Placa | Entrada | Salida | Pago | Monto\n"
+    for registro in datos[0]:
+        texto+=str(registro[0])+" | "+str(registro[1])+" | "+str(registro[2])+" | "+str(registro[3])+" | "+str(registro[4])+" | ₡"+str(registro[5])+"\n"
+    area=Text(ventana,font=("Century Gothic",9),width=100,height=22)
+    area.pack(pady=10)
+    area.insert("1.0",texto)
+    area.config(state="disabled")
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
 
 #Funcion principal de la opcion 4b del menu
