@@ -660,22 +660,38 @@ def calcularCierreTipoPagoAux(pEstacionamiento):
     -Entrada:
         Se recibe la lista del estacionamiento
     -Salida:
-        Se devuelve la información separada por tipo de pago
+        Se devuelve una lista con la cantidad e ingresos reales por tipo de pago
     '''
-    efectivo=[]
-    tarjeta=[]
-    sinpe=[]
+    efectivoCantidad=0
+    efectivoTotal=0
+    tarjetaCantidad=0
+    tarjetaTotal=0
+    sinpeCantidad=0
+    sinpeTotal=0
     for vehiculo in pEstacionamiento:
         if vehiculo.fechaSalida!="":
-            monto=obtenerMontoPagadoAux(vehiculo)
-            registro=[vehiculo.ubicacion,vehiculo.placa,vehiculo.marca,vehiculo.color,vehiculo.tipo,vehiculo.fechaEntrada,vehiculo.fechaSalida,monto]
+            try:
+                monto=vehiculo.montoPagado
+            except:
+                datosPago=calcularMontoSalidaAux(vehiculo)
+                monto=datosPago[3]
             if vehiculo.tipoPago==1:
-                efectivo.append(registro)
+                efectivoCantidad+=1
+                efectivoTotal+=monto
             elif vehiculo.tipoPago==2:
-                tarjeta.append(registro)
+                tarjetaCantidad+=1
+                tarjetaTotal+=monto
             elif vehiculo.tipoPago==3:
-                sinpe.append(registro)
-    return [efectivo,tarjeta,sinpe]
+                sinpeCantidad+=1
+                sinpeTotal+=monto
+
+    return [
+        efectivoCantidad,
+        efectivoTotal,
+        tarjetaCantidad,
+        tarjetaTotal,
+        sinpeCantidad,
+        sinpeTotal]
 
 #Funcion Aux de la opcion 4c del menu
 def guardarCierreDiarioDatAux(pDatos):
