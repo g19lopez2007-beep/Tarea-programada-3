@@ -1,22 +1,11 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 26/6/2026
+#Ultima fecha de modificacion: 27/6/2026
 
 from FuncionesAux import *
 from tkinter import *
 import pickle
-
-#Funcion principal temporal para las opciones del sistema
-def ejecutarFuncionPendiente(pNombreFuncion):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe el nombre de la función que luego se debe programar
-    -Salida:
-        Se muestra un mensaje indicando dónde debe ir esa función
-    '''
-    mostrarPendienteAux(pNombreFuncion)
 
 class Vehiculo:
     '''
@@ -324,87 +313,6 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
         return
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
-#Funcion Aux de la opcion 2 del menu
-def validarUbicacionDisponibleAux(pEstacionamiento,pUbicacion):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe el estacionamiento y la ubicacion
-    -Salida:
-        Se devuelve True si la ubicacion existe y esta libre o un mensaje de error
-    '''
-    configuracion=cargarConfiguracionAux()
-    if configuracion==False:
-        return "Debe configurar primero el tamaño del estacionamiento."
-    tamanno=configuracion[0]
-    if tamanno<=0:
-        return "Debe configurar primero el tamaño del estacionamiento."
-    ubicacion=pUbicacion.strip().upper()
-    try:
-        numero=int(ubicacion[1:])
-    except:
-        return "La ubicación debe tener formato correcto.\nEjemplo: G1"
-    if numero>tamanno:
-        return "La ubicación no existe.\nEl estacionamiento llega hasta G"+str(tamanno)+"."
-    vehiculo=buscarVehiculoUbicacionAux(pEstacionamiento,ubicacion)
-    if vehiculo!=False and vehiculo.fechaSalida=="":
-        return "La ubicación ya está ocupada."
-    return True
-
-#Funcion Aux de la opcion 2 del menu
-def validarDatosEstacionarAux(pPlaca,pMarca,pColor,pTipo,pUbicacion):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se reciben los datos del vehiculo
-    -Salida:
-        Se devuelve True si los datos son validos o un mensaje de error
-    '''
-    if pPlaca.strip()=="":
-        return "Debe ingresar la placa del vehículo."
-    placa=pPlaca.strip().upper()
-    if len(placa)<5:
-        return "La placa no es válida.\nDebe tener al menos 5 caracteres."
-    for caracter in placa:
-        if caracter.isalnum()==False:
-            return "La placa no debe contener espacios ni símbolos."
-    if pMarca.strip()=="":
-        return "Debe ingresar la marca del vehículo."
-    marca=pMarca.strip()
-    if len(marca)<2:
-        return "La marca no es válida.\nDebe tener al menos 2 caracteres."
-    for caracter in marca:
-        if caracter.isalpha()==False and caracter!=" ":
-            return "La marca solo debe contener letras."
-    if pColor.strip()=="":
-        return "Debe ingresar el color del vehículo."
-    color=pColor.strip()
-    if len(color)<3:
-        return "El color no es válido.\nDebe tener al menos 3 caracteres."
-    for caracter in color:
-        if caracter.isalpha()==False and caracter!=" ":
-            return "El color solo debe contener letras."
-    if pTipo.strip()=="":
-        return "Debe ingresar el tipo del vehículo."
-    tipo=pTipo.strip()
-    if len(tipo)<3:
-        return "El tipo de vehículo no es válido.\nEjemplo: Sedan, SUV, Pickup, Moto."
-    if pUbicacion.strip()=="":
-        return "Debe ingresar la ubicación del vehículo.\nEjemplo: G1"
-    ubicacion=pUbicacion.strip().upper()
-    if ubicacion[0]!="G":
-        return "La ubicación debe iniciar con la letra G.\nEjemplo: G1, G2, G3"
-    numero=ubicacion[1:]
-    if numero=="":
-        return "La ubicación debe tener un número después de la G.\nEjemplo: G1"
-    try:
-        numero=int(numero)
-    except:
-        return "La ubicación debe tener formato correcto.\nEjemplo: G1, G2, G3"
-    if numero<=0:
-        return "La ubicación debe ser mayor a 0.\nEjemplo: G1"
-    return True
-
 #Funcion principal de la opcion 2c del menu
 def abrirRetirarVehiculo(pVentana,pEstacionamiento,pActualizar=False):
     '''
@@ -645,23 +553,27 @@ def abrirCierreDiario(pVentana,pEstacionamiento):
     pVentana.withdraw()
     ventana=Toplevel()
     ventana.title("Cierre diario")
-    ventana.geometry("800x550")
-    Label(ventana,text="CIERRE DIARIO",font=("Century Gothic",14,"bold")).pack(pady=15)
+    ventana.geometry("850x600")
+    Label(ventana,text="CIERRE DIARIO",font=("Century Gothic",16,"bold"),fg="blue").pack(pady=10)
+    fechaCierre=obtenerFechaHoraSalidaAux()
+    Label(ventana,text="Fecha del cierre: "+fechaCierre,font=("Century Gothic",12,"bold"),fg="black").pack(pady=5)
     datos=calcularCierreDiarioAux(pEstacionamiento)
     guardarCierreDiarioDatAux(datos)
     guardarEstacionamiento(pEstacionamiento)
-    texto=""
-    texto+="Vehículos cobrados: "+str(len(datos[0]))+"\n"
-    texto+="Total efectivo: ₡"+str(datos[3])+"\n"
-    texto+="Total tarjeta: ₡"+str(datos[5])+"\n"
-    texto+="Total SINPE: ₡"+str(datos[7])+"\n"
-    texto+="Total general: ₡"+str(datos[1])+"\n\n"
-    texto+="Ubicación | Placa | Entrada | Salida | Pago | Monto\n"
-    for registro in datos[0]:
-        texto+=str(registro[0])+" | "+str(registro[1])+" | "+str(registro[2])+" | "+str(registro[3])+" | "+str(registro[4])+" | ₡"+str(registro[5])+"\n"
-    area=Text(ventana,font=("Century Gothic",9),width=100,height=22)
+    area=Text(ventana,width=105,height=24)
     area.pack(pady=10)
-    area.insert("1.0",texto)
+    area.tag_config("titulo",font=("Century Gothic",14,"bold"),foreground="blue")
+    area.tag_config("resumen",font=("Century Gothic",11,"bold"),foreground="green")
+    area.tag_config("tabla",font=("Century Gothic",9),foreground="black")
+    area.insert("end","RESUMEN DEL CIERRE\n","titulo")
+    area.insert("end","Vehículos cobrados: "+str(len(datos[0]))+"\n","resumen")
+    area.insert("end","Total efectivo: ₡"+str(datos[3])+"\n","resumen")
+    area.insert("end","Total tarjeta: ₡"+str(datos[5])+"\n","resumen")
+    area.insert("end","Total SINPE: ₡"+str(datos[7])+"\n","resumen")
+    area.insert("end","Total general: ₡"+str(datos[1])+"\n\n","resumen")
+    area.insert("end","Ubicación | Placa | Entrada | Salida | Pago | Monto\n","titulo")
+    for registro in datos[0]:
+        area.insert("end",str(registro[0])+" | "+str(registro[1])+" | "+str(registro[2])+" | "+str(registro[3])+" | "+str(registro[4])+" | ₡"+str(registro[5])+"\n","tabla")
     area.config(state="disabled")
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
 
@@ -672,28 +584,30 @@ def abrirCierreTipoPago(pVentana,pEstacionamiento):
     -Entrada:
         Se recibe la ventana principal y la lista del estacionamiento
     -Salida:
-        Se muestra el cierre por tipo de pago
+        Se muestra el cierre por tipo de pago y se genera el XML
     '''
     validar=validarDatosReporteAux(pEstacionamiento,cargarConfiguracionAux())
     if validar!=True:
         messagebox.showinfo("Sistema de Parqueo",validar)
         return
+    datos=calcularCierreTipoPagoAux(pEstacionamiento)
+    nombre=guardarCierreTipoPagoXmlAux(datos)
     pVentana.withdraw()
     ventana=Toplevel()
     ventana.title("Cierre por tipo de pago")
     ventana.geometry("600x450")
     Label(ventana,text="CIERRE POR TIPO DE PAGO",font=("Century Gothic",14,"bold")).pack(pady=15)
-    datos=calcularCierreTipoPagoAux(pEstacionamiento)
     texto=""
     texto+="EFECTIVO\n"
-    texto+="Cantidad: "+str(datos[0])+"\n"
-    texto+="Ingresos: ₡"+str(round(datos[1],2))+"\n\n"
+    texto+="Cantidad: "+str(len(datos[0]))+"\n"
+    texto+="Ingresos: ₡"+str(calcularTotalListaPagoAux(datos[0]))+"\n\n"
     texto+="TARJETA\n"
-    texto+="Cantidad: "+str(datos[2])+"\n"
-    texto+="Ingresos: ₡"+str(round(datos[3],2))+"\n\n"
+    texto+="Cantidad: "+str(len(datos[1]))+"\n"
+    texto+="Ingresos: ₡"+str(calcularTotalListaPagoAux(datos[1]))+"\n\n"
     texto+="SINPE\n"
-    texto+="Cantidad: "+str(datos[4])+"\n"
-    texto+="Ingresos: ₡"+str(round(datos[5],2))
+    texto+="Cantidad: "+str(len(datos[2]))+"\n"
+    texto+="Ingresos: ₡"+str(calcularTotalListaPagoAux(datos[2]))+"\n\n"
+    texto+="Archivo generado: "+nombre
     Label(ventana,text=texto,font=("Century Gothic",12),justify="left").pack(pady=20)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
 

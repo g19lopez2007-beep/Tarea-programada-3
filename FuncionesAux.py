@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 26/6/2026
+#Ultima fecha de modificacion: 27/6/2026
 
 from tkinter import messagebox
 from PIL import Image,ImageDraw
@@ -23,17 +23,6 @@ def regresarMenuPrincipal(pVentanaPrincipal,pVentanaActual):
     '''
     pVentanaActual.destroy()
     pVentanaPrincipal.deiconify()
-
-#Funcion Aux para mostrar funciones pendientes
-def mostrarPendienteAux(pNombreFuncion):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe el nombre de la función pendiente
-    -Salida:
-        Se muestra un mensaje indicando dónde debe ir la función
-    '''
-    messagebox.showinfo("Sistema de Parqueo","Aquí tiene que ir la función "+pNombreFuncion)
 
 #Funcion Aux de configuracion
 def obtenerConfiguracionAux():
@@ -269,6 +258,33 @@ def validarReinicioEstacionamientoAux(pEstacionamiento):
         confirmar=messagebox.askyesno("Sistema de Parqueo","Ya existen vehículos cargados.\nSi continúa se reemplazará el estacionamiento actual.\n¿Desea continuar?")
         if confirmar==False:
             return False
+    return True
+
+#Funcion Aux de la opcion 2 del menu
+def validarUbicacionDisponibleAux(pEstacionamiento,pUbicacion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el estacionamiento y la ubicacion
+    -Salida:
+        Se devuelve True si la ubicacion existe y esta libre o un mensaje de error
+    '''
+    configuracion=cargarConfiguracionAux()
+    if configuracion==False:
+        return "Debe configurar primero el tamaño del estacionamiento."
+    tamanno=configuracion[0]
+    if tamanno<=0:
+        return "Debe configurar primero el tamaño del estacionamiento."
+    ubicacion=pUbicacion.strip().upper()
+    try:
+        numero=int(ubicacion[1:])
+    except:
+        return "La ubicación debe tener formato correcto.\nEjemplo: G1"
+    if numero>tamanno:
+        return "La ubicación no existe.\nEl estacionamiento llega hasta G"+str(tamanno)+"."
+    vehiculo=buscarVehiculoUbicacionAux(pEstacionamiento,ubicacion)
+    if vehiculo!=False and vehiculo.fechaSalida=="":
+        return "La ubicación ya está ocupada."
     return True
 
 #Funcion Aux de la opcion 2 del menu
@@ -623,7 +639,7 @@ def obtenerMontoPagadoAux(pVehiculo):
     -Salida:
         Se devuelve el monto pagado del vehículo
     '''
-    if hasattr(pVehiculo,"montoPagado"):
+    if hasattr(pVehiculo,"montoPagado") and pVehiculo.montoPagado>0:
         return pVehiculo.montoPagado
     datosPago=calcularMontoSalidaAux(pVehiculo)
     pVehiculo.montoPagado=datosPago[3]
@@ -636,22 +652,35 @@ def calcularCierreDiarioAux(pEstacionamiento):
     -Entrada:
         Se recibe la lista del estacionamiento
     -Salida:
-        Se devuelve una lista con cantidad de vehiculos cobrados, total de ingresos y vehiculos activos
+        Se devuelve la información completa del cierre diario
     '''
-    cobrados=0
-    total=0
-    activos=0
+    registros=[]
+    totalGeneral=0
+    efectivoCantidad=0
+    efectivoTotal=0
+    tarjetaCantidad=0
+    tarjetaTotal=0
+    sinpeCantidad=0
+    sinpeTotal=0
     for vehiculo in pEstacionamiento:
         if vehiculo.fechaSalida=="":
-            activos+=1
-        else:
-            cobrados+=1
-            try:
-                total+=vehiculo.montoPagado
-            except:
-                datosPago=calcularMontoSalidaAux(vehiculo)
-                total+=datosPago[3]
-    return [cobrados,total,activos]
+            vehiculo.fechaSalida=obtenerFechaHoraSalidaAux()
+        if vehiculo.tipoPago==0:
+            vehiculo.tipoPago=random.randint(1,3)
+        monto=obtenerMontoPagadoAux(vehiculo)
+        tipoPago=obtenerNombreTipoPagoAux(vehiculo.tipoPago)
+        registros.append([vehiculo.ubicacion,vehiculo.placa,vehiculo.fechaEntrada,vehiculo.fechaSalida,tipoPago,monto])
+        totalGeneral+=monto
+        if vehiculo.tipoPago==1:
+            efectivoCantidad+=1
+            efectivoTotal+=monto
+        elif vehiculo.tipoPago==2:
+            tarjetaCantidad+=1
+            tarjetaTotal+=monto
+        elif vehiculo.tipoPago==3:
+            sinpeCantidad+=1
+            sinpeTotal+=monto
+    return [registros,round(totalGeneral,2),efectivoCantidad,round(efectivoTotal,2),tarjetaCantidad,round(tarjetaTotal,2),sinpeCantidad,round(sinpeTotal,2)]
 
 #Funcion Aux de la opcion 4b del menu
 def calcularCierreTipoPagoAux(pEstacionamiento):
@@ -660,40 +689,83 @@ def calcularCierreTipoPagoAux(pEstacionamiento):
     -Entrada:
         Se recibe la lista del estacionamiento
     -Salida:
-        Se devuelve una lista con la cantidad e ingresos reales por tipo de pago
+        Se devuelve la información separada por tipo de pago
     '''
-    efectivoCantidad=0
-    efectivoTotal=0
-    tarjetaCantidad=0
-    tarjetaTotal=0
-    sinpeCantidad=0
-    sinpeTotal=0
+    efectivo=[]
+    tarjeta=[]
+    sinpe=[]
     for vehiculo in pEstacionamiento:
         if vehiculo.fechaSalida!="":
-
-            try:
-                monto=vehiculo.montoPagado
-            except:
-                datosPago=calcularMontoSalidaAux(vehiculo)
-                monto=datosPago[3]
-                vehiculo.montoPagado=monto
+            monto=obtenerMontoPagadoAux(vehiculo)
+            registro=[vehiculo.ubicacion,vehiculo.placa,vehiculo.marca,vehiculo.color,vehiculo.tipo,vehiculo.fechaEntrada,vehiculo.fechaSalida,monto]
             if vehiculo.tipoPago==1:
-                efectivoCantidad+=1
-                efectivoTotal+=monto
+                efectivo.append(registro)
             elif vehiculo.tipoPago==2:
-                tarjetaCantidad+=1
-                tarjetaTotal+=monto
+                tarjeta.append(registro)
             elif vehiculo.tipoPago==3:
-                sinpeCantidad+=1
-                sinpeTotal+=monto
-    return [
-        efectivoCantidad,
-        round(efectivoTotal,2),
-        tarjetaCantidad,
-        round(tarjetaTotal,2),
-        sinpeCantidad,
-        round(sinpeTotal,2)
-    ]
+                sinpe.append(registro)
+    return [efectivo,tarjeta,sinpe]
+
+#Funcion Aux de la opcion 4b del menu
+def limpiarTextoXmlAux(pTexto):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe un texto
+    -Salida:
+        Se devuelve el texto preparado para XML
+    '''
+    texto=str(pTexto)
+    texto=texto.replace("&","&amp;")
+    texto=texto.replace("<","&lt;")
+    texto=texto.replace(">","&gt;")
+    return texto
+
+#Funcion Aux de la opcion 4b del menu
+def guardarCierreTipoPagoXmlAux(pDatos):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se reciben los datos separados por tipo de pago
+    -Salida:
+        Se genera el archivo cierreTipoPago.xml
+    '''
+    archivo=open("cierreTipoPago.xml","w",encoding="utf-8")
+    archivo.write("<cierreTipoPago>\n")
+    nombres=["efectivo","tarjeta","sinpe"]
+    contador=0
+    while contador<len(pDatos):
+        archivo.write("  <"+nombres[contador]+">\n")
+        for vehiculo in pDatos[contador]:
+            archivo.write("    <vehiculo>\n")
+            archivo.write("      <ubicacion>"+limpiarTextoXmlAux(vehiculo[0])+"</ubicacion>\n")
+            archivo.write("      <placa>"+limpiarTextoXmlAux(vehiculo[1])+"</placa>\n")
+            archivo.write("      <marca>"+limpiarTextoXmlAux(vehiculo[2])+"</marca>\n")
+            archivo.write("      <color>"+limpiarTextoXmlAux(vehiculo[3])+"</color>\n")
+            archivo.write("      <tipo>"+limpiarTextoXmlAux(vehiculo[4])+"</tipo>\n")
+            archivo.write("      <fechaEntrada>"+limpiarTextoXmlAux(vehiculo[5])+"</fechaEntrada>\n")
+            archivo.write("      <fechaSalida>"+limpiarTextoXmlAux(vehiculo[6])+"</fechaSalida>\n")
+            archivo.write("      <monto>"+limpiarTextoXmlAux(vehiculo[7])+"</monto>\n")
+            archivo.write("    </vehiculo>\n")
+        archivo.write("  </"+nombres[contador]+">\n")
+        contador+=1
+    archivo.write("</cierreTipoPago>")
+    archivo.close()
+    return "cierreTipoPago.xml"
+
+#Funcion Aux de la opcion 4b del menu
+def calcularTotalListaPagoAux(pLista):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe una lista de vehículos de un tipo de pago
+    -Salida:
+        Se devuelve el total acumulado
+    '''
+    total=0
+    for vehiculo in pLista:
+        total+=vehiculo[7]
+    return round(total,2)
 
 #Funcion Aux de la opcion 4c del menu
 def guardarCierreDiarioDatAux(pDatos):
@@ -715,12 +787,15 @@ def cargarCierreDiarioDatAux():
     -Entrada:
         No recibe datos
     -Salida:
-        Se devuelve el cierre diario guardado
+        Se devuelve el cierre diario guardado o False si no existe
     '''
-    archivo=open("cierreDiario.dat","rb")
-    datos=pickle.load(archivo)
-    archivo.close()
-    return datos
+    try:
+        archivo=open("cierreDiario.dat","rb")
+        datos=pickle.load(archivo)
+        archivo.close()
+        return datos
+    except:
+        return False
 
 #Funcion Aux de la opcion 4c del menu
 def exportarCierreDiarioCsvAux():
@@ -729,13 +804,13 @@ def exportarCierreDiarioCsvAux():
     -Entrada:
         No recibe datos
     -Salida:
-        Se genera un archivo CSV con el cierre diario
+        Se genera un archivo CSV con el cierre diario sin encabezados
     '''
     datos=cargarCierreDiarioDatAux()
-    nombre="cierre_diario_"+obtenerFechaArchivoAux()+".csv"
+    nombre="cierreDiario_"+obtenerFechaArchivoAux()+".csv"
     archivo=open(nombre,"w",encoding="utf-8")
-    archivo.write("Cantidad de vehiculos,Vehiculos activos,Vehiculos retirados,Ingreso total\n")
-    archivo.write(str(datos[0])+","+str(datos[2])+","+str(datos[0]-datos[2])+","+str(round(datos[1],2))+"\n")
+    for registro in datos[0]:
+        archivo.write(str(registro[0])+","+str(registro[1])+","+str(registro[2])+","+str(registro[3])+","+str(registro[4])+","+str(registro[5])+"\n")
     archivo.close()
     return nombre
 
