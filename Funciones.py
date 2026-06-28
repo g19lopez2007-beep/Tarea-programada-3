@@ -371,6 +371,13 @@ def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPa
     datosPago=calcularMontoSalidaAux(vehiculo)
     monto=datosPago[3]
     vehiculo.montoPagado=monto
+    if vehiculo.tipoPago==1:
+        tipoPagoTexto="Efectivo"
+    elif vehiculo.tipoPago==2:
+        tipoPagoTexto="Tarjeta"
+    else:
+        tipoPagoTexto="SINPE"
+    factura=crearFacturaPdfAux(vehiculo,datosPago,tipoPagoTexto)
     guardarEstacionamiento(pEstacionamiento)
     if pActualizar:
         pActualizar()
@@ -382,7 +389,8 @@ def retirarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pTipoPa
     texto+="Tiempo total: "+str(datosPago[0])+" minutos\n"
     texto+="Tiempo cobrado: "+str(datosPago[1])+" minutos\n"
     texto+="Horas cobradas: "+str(datosPago[2])+"\n"
-    texto+="Monto a pagar: ₡"+str(monto)
+    texto+="Monto a pagar: ₡"+str(monto)+"\n"
+    texto+="Factura generada: "+factura+"\n"
     messagebox.showinfo("Sistema de Parqueo",texto)
     regresarMenuPrincipal(pVentanaPrincipal,pVentana)
 
