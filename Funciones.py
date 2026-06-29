@@ -1,13 +1,13 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 27/6/2026
+#Ultima fecha de modificacion: 29/6/2026
 
 from FuncionesAux import *
 from tkinter import *
 import pickle
-from reportlab.pdfgen import canvas
 
+#Clase principal del sistema
 class Vehiculo:
     '''
     Funcionamiento:
@@ -179,6 +179,7 @@ def crearObjetosVehiculos(pDiccionario):
         lista.append(Vehiculo(placa,datos[0],datos[1],datos[2],datos[3],datos[4],datos[5],datos[6],datos[7]))
     return lista
 
+#Funcion principal de apoyo de la opcion 2 del menu
 def abrirDetalleEspacio(pVentana,pEstacionamiento,pUbicacion):
     '''
     Funcionamiento:
@@ -206,6 +207,7 @@ def abrirDetalleEspacio(pVentana,pEstacionamiento,pUbicacion):
     Label(ventana,text=texto,font=("Century Gothic",12),justify="left").pack(pady=20)
     Button(ventana,text="Cerrar",font=("Century Gothic",12,"bold"),width=30,command=ventana.destroy).pack(pady=10)
 
+#Funcion principal de apoyo de la opcion 2 del menu
 def refrescarEstacionamientoGrafico(pFrame,pEstacionamiento,pTamanno,pColumnas,pVentana):
     '''
     Funcionamiento:
@@ -635,7 +637,7 @@ def abrirExportarCierreDiarioCsv(pVentana,pEstacionamiento):
         return
     nombre=exportarCierreDiarioCsvAux()
     messagebox.showinfo("Sistema de Parqueo","El cierre diario se exportó correctamente.\nArchivo generado: "+nombre)
-    
+
 #Funcion principal de la opcion 5 del menu
 def abrirAcercaDe(pVentana):
     '''
@@ -653,46 +655,3 @@ def abrirAcercaDe(pVentana):
     texto="\nCreadores:\nGustavo López Alvarado\nMel Acuña\n\nCurso:\nTaller de Programación\n\nInstitución:\nInstituto Tecnológico de Costa Rica."
     Label(ventana,text=texto,font=("Century Gothic",12),justify="center").pack(pady=20)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=10)
-
-#Funcion Aux de facturacion
-def crearFacturaPdfAux(pVehiculo,pDatosPago,pTipoPagoTexto):
-    '''
-    Funcionamiento:
-    -Entrada:
-        Se recibe el vehiculo, los datos del pago y el tipo de pago en texto
-    -Salida:
-        Se genera una factura en formato PDF
-    '''
-    nombre="factura_"+limpiarNombreArchivoAux(pVehiculo.placa)+"_"+obtenerFechaArchivoAux()+".pdf"
-    pdf=canvas.Canvas(nombre)
-    pdf.setTitle("Factura de Parqueo")
-    pdf.setFont("Helvetica-Bold",16)
-    pdf.drawString(180,780,"FACTURA DE PARQUEO")
-    pdf.setFont("Helvetica",11)
-    pdf.drawString(50,740,"Sistema de Parqueo")
-    pdf.drawString(50,720,"Instituto Tecnologico de Costa Rica")
-    pdf.line(50,700,550,700)
-    pdf.setFont("Helvetica-Bold",12)
-    pdf.drawString(50,670,"Datos del vehiculo")
-    pdf.setFont("Helvetica",11)
-    pdf.drawString(50,645,"Placa: "+str(pVehiculo.placa))
-    pdf.drawString(50,625,"Marca: "+str(pVehiculo.marca))
-    pdf.drawString(50,605,"Color: "+str(pVehiculo.color))
-    pdf.drawString(50,585,"Tipo: "+str(pVehiculo.tipo))
-    pdf.drawString(50,565,"Ubicacion: "+str(pVehiculo.ubicacion))
-    pdf.setFont("Helvetica-Bold",12)
-    pdf.drawString(50,530,"Datos del cobro")
-    pdf.setFont("Helvetica",11)
-    pdf.drawString(50,505,"Entrada: "+str(pVehiculo.fechaEntrada))
-    pdf.drawString(50,485,"Salida: "+str(pVehiculo.fechaSalida))
-    pdf.drawString(50,465,"Tiempo total: "+str(pDatosPago[0])+" minutos")
-    pdf.drawString(50,445,"Tiempo cobrado: "+str(pDatosPago[1])+" minutos")
-    pdf.drawString(50,425,"Horas cobradas: "+str(pDatosPago[2]))
-    pdf.drawString(50,405,"Tipo de pago: "+str(pTipoPagoTexto))
-    pdf.line(50,380,550,380)
-    pdf.setFont("Helvetica-Bold",14)
-    pdf.drawString(50,350,"Monto total: C "+str(pDatosPago[3]))
-    pdf.setFont("Helvetica",10)
-    pdf.drawString(50,310,"Gracias por utilizar el sistema de parqueo.")
-    pdf.save()
-    return nombre

@@ -1,10 +1,11 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 27/6/2026
+#Ultima fecha de modificacion: 29/6/2026
 
 from tkinter import messagebox
 from PIL import Image,ImageDraw
+from reportlab.pdfgen import canvas
 import urllib.request
 import pickle
 import time
@@ -12,7 +13,7 @@ import random
 import json
 import qrcode
 
-#Funcion Aux para regresar al menu principal
+#Funcion Aux de la opcion regresar del menu
 def regresarMenuPrincipal(pVentanaPrincipal,pVentanaActual):
     '''
     Funcionamiento:
@@ -23,23 +24,6 @@ def regresarMenuPrincipal(pVentanaPrincipal,pVentanaActual):
     '''
     pVentanaActual.destroy()
     pVentanaPrincipal.deiconify()
-
-#Funcion Aux de configuracion
-def obtenerConfiguracionAux():
-    '''
-    Funcionamiento:
-    -Entrada:
-        No recibe datos
-    -Salida:
-        Se devuelve la configuración actual o se crea una nueva si no existe
-    '''
-    configuracion=cargarConfiguracionAux()
-    if configuracion==False:
-        configuracion=[0,-1,0.0]
-        archivo=open("configuracion.dat","wb")
-        pickle.dump(configuracion,archivo)
-        archivo.close()
-    return configuracion
 
 #Funcion Aux de la opcion 1 del menu
 def calcularEspaciosEspecialesAux(pTamanno):
@@ -493,6 +477,66 @@ def calcularMontoSalidaAux(pVehiculo):
         monto=horas*pVehiculo.montoHora
     return [minutos,minutosCobrados,horas,round(monto,2)]
 
+#Funcion Aux de la opcion 2c del menu
+def crearFacturaPdfAux(pVehiculo,pDatosPago,pTipoPagoTexto):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe el vehiculo, los datos del pago y el tipo de pago en texto
+    -Salida:
+        Se genera una factura en formato PDF
+    '''
+    nombre="factura_"+limpiarNombreArchivoAux(pVehiculo.placa)+"_"+obtenerFechaArchivoAux()+".pdf"
+    pdf=canvas.Canvas(nombre)
+    pdf.setTitle("Factura de Parqueo")
+    pdf.setFont("Helvetica-Bold",16)
+    pdf.drawString(180,780,"FACTURA DE PARQUEO")
+    pdf.setFont("Helvetica",11)
+    pdf.drawString(50,740,"Sistema de Parqueo")
+    pdf.drawString(50,720,"Instituto Tecnologico de Costa Rica")
+    pdf.line(50,700,550,700)
+    pdf.setFont("Helvetica-Bold",12)
+    pdf.drawString(50,670,"Datos del vehiculo")
+    pdf.setFont("Helvetica",11)
+    pdf.drawString(50,645,"Placa: "+str(pVehiculo.placa))
+    pdf.drawString(50,625,"Marca: "+str(pVehiculo.marca))
+    pdf.drawString(50,605,"Color: "+str(pVehiculo.color))
+    pdf.drawString(50,585,"Tipo: "+str(pVehiculo.tipo))
+    pdf.drawString(50,565,"Ubicacion: "+str(pVehiculo.ubicacion))
+    pdf.setFont("Helvetica-Bold",12)
+    pdf.drawString(50,530,"Datos del cobro")
+    pdf.setFont("Helvetica",11)
+    pdf.drawString(50,505,"Entrada: "+str(pVehiculo.fechaEntrada))
+    pdf.drawString(50,485,"Salida: "+str(pVehiculo.fechaSalida))
+    pdf.drawString(50,465,"Tiempo total: "+str(pDatosPago[0])+" minutos")
+    pdf.drawString(50,445,"Tiempo cobrado: "+str(pDatosPago[1])+" minutos")
+    pdf.drawString(50,425,"Horas cobradas: "+str(pDatosPago[2]))
+    pdf.drawString(50,405,"Tipo de pago: "+str(pTipoPagoTexto))
+    pdf.line(50,380,550,380)
+    pdf.setFont("Helvetica-Bold",14)
+    pdf.drawString(50,350,"Monto total: C "+str(pDatosPago[3]))
+    pdf.setFont("Helvetica",10)
+    pdf.drawString(50,310,"Gracias por utilizar el sistema de parqueo.")
+    pdf.save()
+    return nombre
+
+#Funcion Aux de la opcion 3a del menu
+def obtenerConfiguracionAux():
+    '''
+    Funcionamiento:
+    -Entrada:
+        No recibe datos
+    -Salida:
+        Se devuelve la configuración actual o se crea una nueva si no existe
+    '''
+    configuracion=cargarConfiguracionAux()
+    if configuracion==False:
+        configuracion=[0,-1,0.0]
+        archivo=open("configuracion.dat","wb")
+        pickle.dump(configuracion,archivo)
+        archivo.close()
+    return configuracion
+
 #Funcion Aux de la opcion 3a del menu
 def validarTamannoEstacionamientoAux(pTamanno):
     '''
@@ -814,7 +858,7 @@ def exportarCierreDiarioCsvAux():
     archivo.close()
     return nombre
 
-#Funcion Aux para validar reportes
+#Funcion Aux de la opcion 4 del menu
 def validarDatosReporteAux(pEstacionamiento,pConfiguracion):
     '''
     Funcionamiento:
@@ -833,7 +877,7 @@ def validarDatosReporteAux(pEstacionamiento,pConfiguracion):
         return "No se puede generar el reporte porque falta configurar el monto por hora."
     return True
 
-#Funcion Aux para validar tiempo de gracia en reportes
+#Funcion Aux de la opcion 4 del menu
 def validarTiempoGraciaReporteAux(pConfiguracion):
     '''
     Funcionamiento:
@@ -848,7 +892,7 @@ def validarTiempoGraciaReporteAux(pConfiguracion):
         return False
     return True
 
-#Funcion Aux para establecer tiempo de gracia en cero
+#Funcion Aux de la opcion 4 del menu
 def establecerTiempoGraciaCeroAux(pConfiguracion):
     '''
     Funcionamiento:
@@ -862,7 +906,7 @@ def establecerTiempoGraciaCeroAux(pConfiguracion):
     pickle.dump(pConfiguracion,archivo)
     archivo.close()
 
-#Funcion Aux para validar exportacion a CSV
+#Funcion Aux de la opcion 4c del menu
 def validarExportarCierreDiarioCsvAux():
     '''
     Funcionamiento:
