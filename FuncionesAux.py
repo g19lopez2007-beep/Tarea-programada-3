@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 29/6/2026
+#Ultima fecha de modificacion: 30/6/2026
 
 from tkinter import messagebox
 from PIL import Image,ImageDraw
@@ -32,15 +32,13 @@ def calcularEspaciosEspecialesAux(pTamanno):
     -Entrada:
         Se recibe el tamaño del estacionamiento
     -Salida:
-        Se devuelve la cantidad de espacios especiales
+        Se devuelve la cantidad de espacios especiales correspondiente al 5%
     '''
     especiales=pTamanno*5/100
     if especiales>int(especiales):
         especiales=int(especiales)+1
     else:
         especiales=int(especiales)
-    if pTamanno<=20 and especiales<2:
-        especiales=2
     return especiales
 
 #Funcion Aux de la opcion 1 del menu
@@ -48,18 +46,16 @@ def calcularTopeMasivoAux(pTamanno,pElectrico):
     '''
     Funcionamiento:
     -Entrada:
-        Se recibe el tamaño del estacionamiento y si posee espacio eléctrico
+        Se recibe el tamaño del estacionamiento y si posee espacios eléctricos
     -Salida:
-        Se devuelve la cantidad de vehículos que se pueden cargar masivamente
+        Se devuelve la cantidad máxima de vehículos que se pueden cargar mediante la API
     '''
-    especiales=calcularEspaciosEspecialesAux(pTamanno)
-    disponibles=pTamanno-especiales-pElectrico
-    reserva=disponibles*5/100
-    if reserva>int(reserva):
-        reserva=int(reserva)+1
-    else:
-        reserva=int(reserva)
-    return disponibles-reserva
+    discapacitados=calcularEspaciosEspecialesAux(pTamanno)
+    electricos=0
+    if pElectrico==1:
+        electricos=calcularEspaciosEspecialesAux(pTamanno)
+    normales=pTamanno-discapacitados-electricos
+    return normales
 
 #Funcion Aux de la opcion 1 del menu
 def validarApiAux(pApi):
@@ -244,6 +240,22 @@ def validarReinicioEstacionamientoAux(pEstacionamiento):
             return False
     return True
 
+#Funcion Aux de la opcion 1 del menu
+def guardarEspacioElectricoAux(pElectrico):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe si el estacionamiento tendrá espacios eléctricos
+    -Salida:
+        Se guarda la configuración del sistema
+    '''
+    configuracion=obtenerConfiguracionAux()
+    configuracion[3]=pElectrico
+    archivo=open("configuracion.dat","wb")
+    pickle.dump(configuracion,archivo)
+    archivo.close()
+    return True
+
 #Funcion Aux de la opcion 2 del menu
 def validarUbicacionDisponibleAux(pEstacionamiento,pUbicacion):
     '''
@@ -316,33 +328,26 @@ def validarDatosEstacionarAux(pPlaca,pMarca,pColor,pTipo,pUbicacion):
     tipo=pTipo.strip()
     ubicacion=pUbicacion.strip().upper()
     if placa=="":
-        return "Debe ingresar la placa del vehículo.\nFormato correcto: letras y números, por ejemplo: ABC123"
-    if len(placa)<5 or len(placa)>8:
-        return "La placa no tiene el formato correcto.\nFormato correcto: letras y números, por ejemplo: ABC123"
-    if placa.isdigit() or placa.isalpha():
-        return "La placa debe combinar letras y números.\nFormato correcto: ABC123"
+        return "Debe ingresar la placa del vehículo."
     for caracter in placa:
         if caracter.isalnum()==False:
-            return "La placa solo puede contener letras y números.\nFormato correcto: ABC123"
+            return "La placa solo puede contener letras y números."
     if marca=="":
-        return "Debe ingresar la marca del vehículo.\nFormato correcto: Toyota, Nissan, Hyundai"
+        return "Debe ingresar la marca del vehículo."
     if marca.isdigit():
-        return "La marca no puede ser solamente numérica.\nFormato correcto: Toyota, Nissan, Hyundai"
+        return "La marca no puede ser solamente numérica."
     for caracter in marca:
         if caracter.isalpha()==False and caracter!=" ":
-            return "La marca solo puede contener letras.\nFormato correcto: Toyota, Nissan, Hyundai"
+            return "La marca solo puede contener letras."
     if color=="":
-        return "Debe ingresar el color del vehículo.\nFormato correcto: rojo, blanco, negro"
+        return "Debe ingresar el color del vehículo."
     if color.isdigit():
-        return "El color no puede ser numérico.\nFormato correcto: rojo, blanco, negro"
+        return "El color no puede ser numérico."
     for caracter in color:
         if caracter.isalpha()==False and caracter!=" ":
-            return "El color solo puede contener letras.\nFormato correcto: rojo, blanco, negro"
+            return "El color solo puede contener letras."
     if tipo=="":
-        return "Debe ingresar el tipo del vehículo.\nFormato correcto: carro, moto, camion, bus, suv"
-    tiposValidos=["carro","moto","camion","bus","suv","pickup","automovil","motocicleta"]
-    if tipo.lower() not in tiposValidos:
-        return "El tipo de vehículo no tiene el formato correcto.\nFormato correcto: carro, moto, camion, bus, suv o pickup"
+        return "Debe ingresar el tipo o modelo del vehículo."
     if ubicacion=="":
         return "Debe ingresar la ubicación del vehículo.\nFormato correcto: G1, G2, G3"
     if ubicacion[0]!="G":
@@ -372,6 +377,48 @@ def buscarVehiculoPlacaAux(pEstacionamiento,pPlaca):
         if vehiculo.placa==pPlaca:
             return True
     return False
+
+#Funcion Aux de la opcion 2 del menu
+def obtenerTipoEspacioAux(pUbicacion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ubicación del espacio
+    -Salida:
+        Se devuelve el tipo del espacio
+    '''
+    configuracion=obtenerConfiguracionAux()
+    if configuracion==False:
+        return "General"
+    tamanno=configuracion[0]
+    discapacitados=calcularEspaciosEspecialesAux(tamanno)
+    electricos=0
+    if len(configuracion)>=4 and configuracion[3]==1:
+        electricos=calcularEspaciosEspecialesAux(tamanno)
+    numero=int(pUbicacion[1:])
+    ultimoNormal=tamanno-discapacitados-electricos
+    ultimoDiscapacitado=tamanno-electricos
+    if numero<=ultimoNormal:
+        return "General"
+    if numero<=ultimoDiscapacitado:
+        return "Discapacitado"
+    return "Eléctrico"
+
+#Funcion Aux de la opcion 2 del menu
+def obtenerTextoEspacioAux(pUbicacion):
+    '''
+    Funcionamiento:
+    -Entrada:
+        Se recibe la ubicación del espacio
+    -Salida:
+        Se devuelve el texto que debe mostrarse en el botón del espacio
+    '''
+    tipo=obtenerTipoEspacioAux(pUbicacion)
+    if tipo=="Discapacitado":
+        return pUbicacion+"\nDIS"
+    if tipo=="Eléctrico":
+        return pUbicacion+"\nELEC"
+    return pUbicacion
 
 #Funcion Aux de la opcion 2c del menu
 def validarRetirarVehiculoAux(pPlaca):
@@ -531,10 +578,12 @@ def obtenerConfiguracionAux():
     '''
     configuracion=cargarConfiguracionAux()
     if configuracion==False:
-        configuracion=[0,-1,0.0]
-        archivo=open("configuracion.dat","wb")
-        pickle.dump(configuracion,archivo)
-        archivo.close()
+        configuracion=[0,-1,0.0,0]
+    elif len(configuracion)==3:
+        configuracion.append(0)
+    archivo=open("configuracion.dat","wb")
+    pickle.dump(configuracion,archivo)
+    archivo.close()
     return configuracion
 
 #Funcion Aux de la opcion 3a del menu

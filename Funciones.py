@@ -1,7 +1,7 @@
 #Creado por: Gustavo López Alvarado y Mel Acuña
 #Version de python: 3.14
 #Fecha de creacion 9/6/2026
-#Ultima fecha de modificacion: 29/6/2026
+#Ultima fecha de modificacion: 30/6/2026
 
 from FuncionesAux import *
 from tkinter import *
@@ -97,7 +97,6 @@ def abrirObtenerVehiculos(pVentana,pEstacionamiento):
     Button(ventanaObtener,text="Obtener vehículos",font=("Century Gothic",12,"bold"),width=35,command=lambda:obtenerVehiculosTk(pVentana,ventanaObtener,pEstacionamiento,tamanno,electrico,monto,api)).pack(pady=10)
     Button(ventanaObtener,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventanaObtener)).pack(pady=5)
 
-#Funcion principal de la opcion 1 del menu
 def obtenerVehiculosTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno,pElectrico,pMonto,pApi):
     '''
     Funcionamiento:
@@ -133,7 +132,7 @@ def obtenerVehiculosTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno,pEle
         return
     confirmar=validarReinicioEstacionamientoAux(pEstacionamiento)
     if confirmar==False:
-     return
+        return
     if pElectrico.get()=="Sí":
         electrico=1
     else:
@@ -159,6 +158,7 @@ def obtenerVehiculosTk(pVentanaPrincipal,pVentana,pEstacionamiento,pTamanno,pEle
         guardarConfiguracionAux(tamanno)
     if guardarMonto==True:
         guardarMontoHoraAux(monto)
+    guardarEspacioElectricoAux(electrico)
     guardarEstacionamiento(pEstacionamiento)
     crearVouchersVehiculosAux(pEstacionamiento)
     messagebox.showinfo("Sistema de Parqueo","Se cargaron "+str(len(pEstacionamiento))+" vehículos correctamente.\nMáximo permitido por el estacionamiento: "+str(cantidad))
@@ -194,11 +194,12 @@ def abrirDetalleEspacio(pVentana,pEstacionamiento,pUbicacion):
     Label(ventana,text="DETALLE DEL ESPACIO",font=("Century Gothic",14,"bold")).pack(pady=15)
     vehiculo=buscarVehiculoUbicacionAux(pEstacionamiento,pUbicacion)
     if vehiculo==False:
-        texto="Ubicación: "+pUbicacion+"\nEstado: Libre"
+        texto="Ubicación: "+pUbicacion+"\nEstado: Libre\nTipo de espacio: "+obtenerTipoEspacioAux(pUbicacion)
     else:
         texto=""
         texto+="Ubicación: "+vehiculo.ubicacion+"\n"
         texto+="Estado: Ocupado\n"
+        texto+="Tipo de espacio: "+obtenerTipoEspacioAux(pUbicacion)+"\n"
         texto+="Placa: "+vehiculo.placa+"\n"
         texto+="Marca: "+vehiculo.marca+"\n"
         texto+="Color: "+vehiculo.color+"\n"
@@ -226,7 +227,7 @@ def refrescarEstacionamientoGrafico(pFrame,pEstacionamiento,pTamanno,pColumnas,p
             color="green"
         else:
             color="red"
-        Button(pFrame,text=ubicacion,font=("Century Gothic",10,"bold"),width=8,height=3,bg=color,fg="white",command=lambda pUbicacion=ubicacion:abrirDetalleEspacio(pVentana,pEstacionamiento,pUbicacion)).grid(row=(contador-1)//pColumnas,column=(contador-1)%pColumnas,padx=4,pady=4)
+        Button(pFrame,text=obtenerTextoEspacioAux(ubicacion),font=("Century Gothic",10,"bold"),width=8,height=3,bg=color,fg="white",command=lambda pUbicacion=ubicacion:abrirDetalleEspacio(pVentana,pEstacionamiento,pUbicacion)).grid(row=(contador-1)//pColumnas,column=(contador-1)%pColumnas,padx=4,pady=4)
         contador+=1
     frameExtra=Frame(pFrame)
     frameExtra.grid(row=((pTamanno-1)//pColumnas)+1,column=0,columnspan=pColumnas,pady=10)
@@ -245,10 +246,11 @@ def abrirEstacionarVehiculo(pVentana,pEstacionamiento,pActualizar=False):
     pVentana.withdraw()
     ventana=Toplevel()
     ventana.title("Estacionar vehículo")
-    ventana.geometry("600x450")
+    ventana.geometry("650x450")
     Label(ventana,text="ESTACIONAR VEHÍCULO",font=("Century Gothic",14,"bold")).pack(pady=15)
     frame=Frame(ventana)
     frame.pack()
+    configuracion=cargarConfiguracionAux()
     Label(frame,text="Placa:",font=("Century Gothic",12)).grid(row=0,column=0,pady=5,sticky="w")
     placa=Entry(frame,font=("Century Gothic",12))
     placa.grid(row=0,column=1,pady=5)
@@ -258,7 +260,7 @@ def abrirEstacionarVehiculo(pVentana,pEstacionamiento,pActualizar=False):
     Label(frame,text="Color:",font=("Century Gothic",12)).grid(row=2,column=0,pady=5,sticky="w")
     color=Entry(frame,font=("Century Gothic",12))
     color.grid(row=2,column=1,pady=5)
-    Label(frame,text="Tipo:",font=("Century Gothic",12)).grid(row=3,column=0,pady=5,sticky="w")
+    Label(frame,text="Tipo o modelo:",font=("Century Gothic",12)).grid(row=3,column=0,pady=5,sticky="w")
     tipo=Entry(frame,font=("Century Gothic",12))
     tipo.grid(row=3,column=1,pady=5)
     Label(frame,text="Ubicación:",font=("Century Gothic",12)).grid(row=4,column=0,pady=5,sticky="w")
@@ -266,6 +268,10 @@ def abrirEstacionarVehiculo(pVentana,pEstacionamiento,pActualizar=False):
     ubicacion.grid(row=4,column=1,pady=5)
     Label(frame,text="Monto por hora:",font=("Century Gothic",12)).grid(row=5,column=0,pady=5,sticky="w")
     monto=Entry(frame,font=("Century Gothic",12))
+    if configuracion!=False and configuracion[2]>0:
+        monto.insert(0,str(configuracion[2]))
+        monto.config(state="disabled")
+        Label(frame,text="Monto configurado: ₡"+str(configuracion[2]),font=("Century Gothic",10)).grid(row=5,column=2,padx=10,pady=5,sticky="w")
     monto.grid(row=5,column=1,pady=5)
     Button(ventana,text="Estacionar vehículo",font=("Century Gothic",12,"bold"),width=35,command=lambda:estacionarVehiculoTk(pVentana,ventana,pEstacionamiento,placa,marca,color,tipo,ubicacion,monto,pActualizar)).pack(pady=10)
     Button(ventana,text="Regresar",font=("Century Gothic",12,"bold"),width=35,command=lambda:regresarMenuPrincipal(pVentana,ventana)).pack(pady=5)
@@ -283,11 +289,15 @@ def estacionarVehiculoTk(pVentanaPrincipal,pVentana,pEstacionamiento,pPlaca,pMar
     if validar!=True:
         messagebox.showinfo("Sistema de Parqueo",validar)
         return
-    validarMonto=validarMontoHoraAux(pMonto.get())
-    if validarMonto!=True:
-        messagebox.showinfo("Sistema de Parqueo",validarMonto)
-        return
-    monto=round(float(pMonto.get()),2)
+    configuracion=cargarConfiguracionAux()
+    if configuracion!=False and configuracion[2]>0:
+        monto=configuracion[2]
+    else:
+        validarMonto=validarMontoHoraAux(pMonto.get())
+        if validarMonto!=True:
+            messagebox.showinfo("Sistema de Parqueo",validarMonto)
+            return
+        monto=round(float(pMonto.get()),2)
     placa=pPlaca.get().strip().upper()
     marca=pMarca.get().strip().title()
     color=pColor.get().strip().lower()
